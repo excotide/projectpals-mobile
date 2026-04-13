@@ -1,17 +1,83 @@
 # projectpals_mobile
 
-A new Flutter project.
+Aplikasi mobile berbasis Flutter untuk ProjectPals.
 
-## Getting Started
+## Cara Instalasi
 
-This project is a starting point for a Flutter application.
+### 1. Prasyarat
 
-A few resources to get you started if this is your first Flutter project:
+Pastikan perangkat sudah terpasang:
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- [Flutter SDK](https://docs.flutter.dev/get-started/install)
+- [Git](https://git-scm.com/downloads)
+- Android Studio (untuk emulator dan Android SDK)
+- VS Code atau Android Studio (IDE)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Opsional sesuai target platform:
+
+- Xcode (jika ingin build iOS/macOS, khusus macOS)
+- Visual Studio dengan workload C++ (jika ingin build Windows desktop)
+
+### 2. Clone Repository
+
+```bash
+git clone <url-repository-anda>
+cd projectpals_mobile
+```
+
+Jika repository sudah ada di lokal, langsung masuk ke folder project:
+
+```bash
+cd projectpals_mobile
+```
+
+### 3. Cek Environment Flutter
+
+```bash
+flutter doctor
+```
+
+Selesaikan semua issue penting yang ditandai oleh `flutter doctor` sebelum lanjut.
+
+### 4. Install Dependency
+
+```bash
+flutter pub get
+```
+
+### 5. Jalankan Aplikasi
+
+Pastikan emulator aktif atau device fisik sudah terhubung, lalu jalankan:
+
+```bash
+flutter run
+```
+
+Jika ingin memilih device tertentu:
+
+```bash
+flutter devices
+flutter run -d <device_id>
+```
+
+## Build Release (Opsional)
+
+Android APK:
+
+```bash
+flutter build apk --release
+```
+
+Android App Bundle (Play Store):
+
+```bash
+flutter build appbundle --release
+```
+
+## Perintah Berguna
+
+```bash
+flutter clean
+flutter pub get
+flutter test
+```
