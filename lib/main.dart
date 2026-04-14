@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'splashscreen.dart';
 import 'onboarding.dart';
 import 'dashboard.dart'; 
+import 'login.dart';
+import 'register_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,11 +17,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ProjectPals',
-      // Tetap mulai dari Splash Screen
-      initialRoute: '/dashboard', // Ganti ke '/dashboard' untuk langsung ke dashboard
+      initialRoute: '/login',
       routes: {
         '/': (context) => const ProjectPalsSplashScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
         '/dashboard': (context) => const DashboardScreen(),
       },
       theme: ThemeData(

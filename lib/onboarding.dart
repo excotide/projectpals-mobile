@@ -120,10 +120,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       illustration: Container(
         width: 240, height: 240,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.03),
+          color: Colors.white.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: Colors.white10),
-          boxShadow: [BoxShadow(color: primaryCyan.withOpacity(0.1), blurRadius: 40)],
+          boxShadow: [BoxShadow(color: primaryCyan.withValues(alpha: 0.1), blurRadius: 40)],
         ),
         child: Icon(Icons.hub_rounded, size: 120, color: primaryCyan),
       ),
@@ -252,7 +252,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF020A1A),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(text, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
     );

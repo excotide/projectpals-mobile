@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'register_screen.dart'; // Pastikan path ini sesuai dengan nama file register kamu
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,12 +43,12 @@ class _LoginScreenState extends State<LoginScreen> {
             constraints: const BoxConstraints(maxWidth: 400),
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF0D1B2A).withOpacity(0.8),
+              color: const Color(0xFF0D1B2A).withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(25),
               border: Border.all(color: Colors.white10),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 )
@@ -124,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: primaryCyan.withOpacity(0.3),
+                          color: primaryCyan.withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -138,7 +137,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         elevation: 0,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/dashboard');
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
@@ -169,10 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     GestureDetector(
                       onTap: () {
                         // Navigasi ke Register
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                        );
+                        Navigator.pushNamed(context, '/register');
                       },
                       child: Text("Register Now", 
                         style: TextStyle(
@@ -221,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: primaryCyan.withOpacity(0.6)),
+              borderSide: BorderSide(color: primaryCyan.withValues(alpha: 0.6)),
             ),
           ),
         ),

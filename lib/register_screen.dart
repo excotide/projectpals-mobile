@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'login.dart'; // Pastikan nama file login kamu adalah login.dart
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -45,12 +44,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             constraints: const BoxConstraints(maxWidth: 400), 
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF0D1B2A).withOpacity(0.8), 
+              color: const Color(0xFF0D1B2A).withValues(alpha: 0.8), 
               borderRadius: BorderRadius.circular(25),
               border: Border.all(color: Colors.white10),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 )
@@ -92,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       elevation: 5,
                     ),
                     onPressed: () {
-                      // Tambahkan logika registrasi di sini
+                      Navigator.pushReplacementNamed(context, '/dashboard');
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -122,11 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: TextStyle(color: textGrey, fontSize: 13)),
                     GestureDetector(
                       onTap: () {
-                        // Navigasi ke LoginScreen
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        );
+                        Navigator.pushNamed(context, '/login');
                       },
                       child: Text(
                         "Log In", 
@@ -177,7 +172,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: primaryCyan.withOpacity(0.6)),
+              borderSide: BorderSide(color: primaryCyan.withValues(alpha: 0.6)),
             ),
           ),
         ),

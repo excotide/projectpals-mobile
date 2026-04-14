@@ -6,7 +6,7 @@ void showNotificationDialog(BuildContext context) {
 
   showDialog(
     context: context,
-    barrierColor: Colors.black.withOpacity(0.8),
+    barrierColor: Colors.black.withValues(alpha: 0.8),
     builder: (BuildContext context) {
       return Dialog(
         backgroundColor: Colors.transparent,

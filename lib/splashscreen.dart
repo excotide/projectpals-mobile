@@ -88,7 +88,7 @@ class _ProjectPalsSplashScreenState extends State<ProjectPalsSplashScreen>
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         blurRadius: 100,
                         spreadRadius: 50,
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'notification_dialog.dart'; 
-import 'join_screen.dart'; // Pastikan file join_screen.dart sudah dibuat
+import 'join_screen.dart' as join; // Pastikan file join_screen.dart sudah dibuat
+import 'create_screen.dart' as create;
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -86,13 +87,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Row(
                 children: [
                   _buildQuickAccessBtn(Icons.rocket_launch, "Create Room", () {
-                    // Logika Create Room bisa ditaruh di sini
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const create.CreateRoomScreen()),
+                    );
                   }),
                   const SizedBox(width: 15),
                   _buildQuickAccessBtn(Icons.groups, "Join Room", () {
                     Navigator.push(
                       context, 
-                      MaterialPageRoute(builder: (context) => const JoinScreen())
+                      MaterialPageRoute(builder: (context) => const join.JoinScreen())
                     );
                   }),
                 ],
@@ -136,7 +140,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           if (index == 1) { // Jika klik menu JOIN di Nav Bar
             Navigator.push(
               context, 
-              MaterialPageRoute(builder: (context) => const JoinScreen())
+              MaterialPageRoute(builder: (context) => const join.JoinScreen())
+            );
+          } else if (index == 2) { // Jika klik menu ROOMS di Nav Bar
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const create.CreateRoomScreen()),
             );
           }
         },
@@ -174,7 +183,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF002B35).withOpacity(0.9),
+              color: const Color(0xFF002B35).withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
@@ -199,7 +208,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF1B263B).withOpacity(0.5),
+            color: const Color(0xFF1B263B).withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(15),
           ),
           child: Column(
@@ -236,7 +245,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                border: Border.all(color: mintGreen.withOpacity(0.5)),
+                border: Border.all(color: mintGreen.withValues(alpha: 0.5)),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text("COMPLETED", 

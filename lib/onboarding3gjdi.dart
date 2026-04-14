@@ -273,7 +273,7 @@ class Onboarding3State extends State<Onboarding3> {
 																															mainAxisAlignment: MainAxisAlignment.spaceBetween,
 																															children: [
 																																InkWell(
-																																	onTap: () { print('Pressed'); },
+																																	onTap: () { debugPrint('Pressed'); },
 																																	child: IntrinsicWidth(
 																																		child: IntrinsicHeight(
 																																			child: Container(
@@ -313,7 +313,7 @@ class Onboarding3State extends State<Onboarding3> {
 																																	),
 																																),
 																																InkWell(
-																																	onTap: () { print('Pressed'); },
+																																	onTap: () { debugPrint('Pressed'); },
 																																	child: IntrinsicWidth(
 																																		child: IntrinsicHeight(
 																																			child: Container(
@@ -353,7 +353,7 @@ class Onboarding3State extends State<Onboarding3> {
 																																	),
 																																),
 																																InkWell(
-																																	onTap: () { print('Pressed'); },
+																																	onTap: () { debugPrint('Pressed'); },
 																																	child: IntrinsicWidth(
 																																		child: IntrinsicHeight(
 																																			child: Container(

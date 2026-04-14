@@ -296,7 +296,7 @@ class Onboarding2State extends State<Onboarding2> {
 																																bottom: 26,
 																																left: 0,
 																																child: InkWell(
-																																	onTap: () { print('Pressed'); },
+																																	onTap: () { debugPrint('Pressed'); },
 																																	child: IntrinsicWidth(
 																																		child: IntrinsicHeight(
 																																			child: Container(
@@ -361,7 +361,7 @@ class Onboarding2State extends State<Onboarding2> {
 																										top: 0,
 																										right: 0,
 																										child: InkWell(
-																											onTap: () { print('Pressed'); },
+																											onTap: () { debugPrint('Pressed'); },
 																											child: IntrinsicWidth(
 																												child: IntrinsicHeight(
 																													child: Container(
