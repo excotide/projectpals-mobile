@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ProjectPals',
-      initialRoute: '/login',
+      initialRoute: '/',
       routes: {
         '/': (context) => const ProjectPalsSplashScreen(),
         '/onboarding': (context) => const OnboardingScreen(),

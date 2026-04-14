@@ -42,13 +42,10 @@ class _ProjectPalsSplashScreenState extends State<ProjectPalsSplashScreen>
 
     _controller.forward();
 
-    // Berpindah ke halaman onboarding setelah durasi animasi selesai
-    /*Timer(const Duration(seconds: 5), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/onboarding');
-      }
+    Future.delayed(const Duration(milliseconds: 4200), () {
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/login');
     });
-    */
   }
 
   @override

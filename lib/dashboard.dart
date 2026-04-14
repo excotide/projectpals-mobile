@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'notification_dialog.dart'; 
 import 'join_screen.dart' as join; // Pastikan file join_screen.dart sudah dibuat
 import 'create_screen.dart' as create;
+import 'profile_screen.dart' as profile;
+import 'room_screen.dart' as room;
+import 'app_bottom_nav.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -89,14 +92,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   _buildQuickAccessBtn(Icons.rocket_launch, "Create Room", () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const create.CreateRoomScreen()),
+                      buildSlideRoute(const create.CreateRoomScreen()),
                     );
                   }),
                   const SizedBox(width: 15),
                   _buildQuickAccessBtn(Icons.groups, "Join Room", () {
                     Navigator.push(
                       context, 
-                      MaterialPageRoute(builder: (context) => const join.JoinScreen())
+                      buildSlideRoute(const join.JoinRoomScreen()),
                     );
                   }),
                 ],
@@ -129,32 +132,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
 
       // --- BOTTOM NAVIGATION BAR ---
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF05101C),
-        type: BottomNavigationBarType.fixed,
+      bottomNavigationBar: AppBottomNavBar(
         currentIndex: _selectedIndex,
         selectedItemColor: mintGreen,
-        unselectedItemColor: Colors.white38,
         onTap: (index) {
+          if (index == _selectedIndex) {
+            return;
+          }
+
           setState(() => _selectedIndex = index);
-          if (index == 1) { // Jika klik menu JOIN di Nav Bar
-            Navigator.push(
-              context, 
-              MaterialPageRoute(builder: (context) => const join.JoinScreen())
-            );
-          } else if (index == 2) { // Jika klik menu ROOMS di Nav Bar
+
+          if (index == 1) {
+            Navigator.push(context, buildSlideRoute(const join.JoinRoomScreen()));
+          } else if (index == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const create.CreateRoomScreen()),
+              MaterialPageRoute(
+                builder: (context) => const room.RoomScreen(),
+              ),
+            );
+          } else if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const profile.ProfileScreen(),
+              ),
             );
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: "HOME"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "JOIN"),
-          BottomNavigationBarItem(icon: Icon(Icons.analytics_outlined), label: "ROOMS"),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "PROFILE"),
-        ],
       ),
     );
   }
