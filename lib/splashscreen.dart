@@ -44,7 +44,7 @@ class _ProjectPalsSplashScreenState extends State<ProjectPalsSplashScreen>
 
     Future.delayed(const Duration(milliseconds: 4200), () {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacementNamed(context, '/onboarding');
     });
   }
 
