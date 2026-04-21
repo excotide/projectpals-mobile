@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_strings.dart';
 import 'join_screen.dart' as join;
 import 'room_screen.dart' as room;
-import 'app_bottom_nav.dart';
+import '../widgets/app_bottom_nav.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Dummy data
@@ -198,7 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (index == 0) {
             Navigator.pushNamedAndRemoveUntil(
               context,
-              '/dashboard',
+              AppStrings.routeDashboard,
               (route) => false,
             );
           } else if (index == 1) {

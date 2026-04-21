@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_strings.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -91,7 +92,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       elevation: 5,
                     ),
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/dashboard');
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppStrings.routeDashboard,
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: TextStyle(color: textGrey, fontSize: 13)),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/login');
+                        Navigator.pushNamed(context, AppStrings.routeLogin);
                       },
                       child: Text(
                         "Log In", 

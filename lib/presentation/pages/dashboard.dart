@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'notification_dialog.dart'; 
+import '../widgets/notification_dialog.dart';
 import 'join_screen.dart' as join; // Pastikan file join_screen.dart sudah dibuat
 import 'create_screen.dart' as create;
 import 'profile_screen.dart' as profile;
 import 'room_screen.dart' as room;
-import 'app_bottom_nav.dart';
+import '../widgets/app_bottom_nav.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});

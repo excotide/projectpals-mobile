@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../core/constants/app_strings.dart';
 import 'dashboard.dart' as dashboard;
 import 'profile_screen.dart' as profile;
 import 'room_screen.dart' as room;
-import 'app_bottom_nav.dart';
+import '../widgets/app_bottom_nav.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Dummy valid room codes
@@ -1126,7 +1127,7 @@ class _SuccessScreenState extends State<_SuccessScreen>
                   onPressed: () {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
-                      '/dashboard',
+                      AppStrings.routeDashboard,
                       (route) => false,
                     );
                   },

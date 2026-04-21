@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'splashscreen.dart';
-import 'onboarding.dart';
-import 'dashboard.dart'; 
-import 'login.dart';
-import 'register_screen.dart';
+import 'config/di/service_locator.dart';
+import 'config/router/app_router.dart';
+import 'core/constants/app_strings.dart';
+import 'core/theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await ServiceLocator.init();
   runApp(const MyApp());
 }
 
@@ -16,20 +17,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'ProjectPals',
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const ProjectPalsSplashScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/dashboard': (context) => const DashboardScreen(),
-      },
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.blue,
-        fontFamily: 'sans-serif',
-      ),
+      title: AppStrings.appName,
+      initialRoute: AppRouter.initialRoute,
+      routes: AppRouter.routes,
+      theme: AppTheme.darkTheme(),
     );
   }
 }

@@ -1020,7 +1020,7 @@ class _SuccessDialogState extends State<_SuccessDialog>
           children: [
             AnimatedBuilder(
               animation: _ctrl,
-              builder: (_, __) => Transform.scale(
+              builder: (context, child) => Transform.scale(
                 scale: _scale.value,
                 child: Container(
                   width: 80,

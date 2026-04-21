@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_bottom_nav.dart';
+import '../widgets/app_bottom_nav.dart';
 import 'dashboard.dart' as dashboard;
 import 'join_screen.dart' as join;
 import 'profile_screen.dart' as profile;
@@ -118,7 +118,7 @@ class RoomScreen extends StatelessWidget {
               child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 itemCount: _dummyRooms.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (context, index) => const SizedBox(height: 12),
                 itemBuilder: (context, i) {
                   final room = _dummyRooms[i];
                   return GestureDetector(
@@ -411,7 +411,10 @@ class _MemberCard extends StatelessWidget {
                 spacing: 6,
                 children: expertise.map((e) => Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(color: _cyan.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                  decoration: BoxDecoration(
+                    color: _cyan.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                   child: Text(e, style: const TextStyle(color: _cyan, fontSize: 10)),
                 )).toList(),
               ),
@@ -440,9 +443,9 @@ class _ActionButton extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.05),
+          color: color.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -468,9 +471,9 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(status, style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.bold)),
     );

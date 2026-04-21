@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_strings.dart';
 
 class ProjectPalsSplashScreen extends StatefulWidget {
   const ProjectPalsSplashScreen({super.key});
@@ -44,7 +45,7 @@ class _ProjectPalsSplashScreenState extends State<ProjectPalsSplashScreen>
 
     Future.delayed(const Duration(milliseconds: 4200), () {
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/onboarding');
+      Navigator.pushReplacementNamed(context, AppStrings.routeOnboarding);
     });
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_strings.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -138,7 +139,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         elevation: 0,
                       ),
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/dashboard');
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppStrings.routeDashboard,
+                        );
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     GestureDetector(
                       onTap: () {
                         // Navigasi ke Register
-                        Navigator.pushNamed(context, '/register');
+                        Navigator.pushNamed(context, AppStrings.routeRegister);
                       },
                       child: Text("Register Now", 
                         style: TextStyle(
