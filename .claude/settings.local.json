@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"d:\\\\PROYEK\\\\SMT4\\\\projectpals_mobile\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)",
+      "Bash(cd \"d:\\\\\\\\PROYEK\\\\\\\\SMT4\\\\\\\\projectpals_mobile\")"
+    ]
+  }
+}
