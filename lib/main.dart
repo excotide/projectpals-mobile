@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'features/dashboard/dashboard_screen.dart'; //menambahkan ini sementara
 
 // Core
 import 'core/network/api_client.dart';
@@ -39,6 +40,7 @@ import 'features/splash/splash_screen.dart';
 import 'features/room/presentation/screens/create_screen.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/auth/presentation/screens/register_screen.dart';
+import 'features/profile/edit_profile_screen.dart';
 import 'shared/widgets/main_scaffold.dart';
 import 'onboarding.dart';
 
@@ -91,17 +93,23 @@ class ProjectPalsApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'sans-serif',
         ),
-        initialRoute: '/',
+        initialRoute: '/dashboard', // <--- Cukup Tulis yang Ini Saja!
         routes: {
-          '/': (_) => const SplashScreen(),
+          // ==== BARIS YANG DITAMBAHKAN/DIUBAH UNTUK BYPASS ====
+          '/': (_) =>
+              const MainScaffold(initialIndex: 0), // Langsung ke Dashboard
+          '/login': (_) =>
+              const MainScaffold(initialIndex: 0), // Langsung ke Dashboard
+          // '/': (_) => const SplashScreen(),
           '/onboarding': (_) => const OnboardingScreen(),
-          '/login': (_) => const LoginScreen(),
+          // '/login': (_) => const LoginScreen(),
           '/register': (_) => const RegisterScreen(),
           '/dashboard': (_) => const MainScaffold(initialIndex: 0),
           '/join': (_) => const MainScaffold(initialIndex: 1),
           '/rooms': (_) => const MainScaffold(initialIndex: 2),
           '/profile': (_) => const MainScaffold(initialIndex: 3),
           '/create': (_) => const CreateRoomScreen(),
+          '/edit-profile': (_) => const EditProfileScreen(),
         },
       ),
     );
