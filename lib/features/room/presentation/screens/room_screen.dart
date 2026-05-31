@@ -24,6 +24,10 @@ class _RoomScreenState extends State<RoomScreen> {
   @override
   void initState() {
     super.initState();
+    _loadRooms();
+  }
+
+  void _loadRooms() {
     context.read<RoomBloc>().add(RoomMyRoomsLoadRequested());
   }
 
@@ -32,7 +36,7 @@ class _RoomScreenState extends State<RoomScreen> {
       _isLoading = true;
       _error = null;
     });
-    context.read<RoomBloc>().add(RoomMyRoomsLoadRequested());
+    _loadRooms();
   }
 
   @override
@@ -45,11 +49,19 @@ class _RoomScreenState extends State<RoomScreen> {
             _isLoading = false;
             _error = null;
           });
-        } else if (state is RoomFailure && _isLoading) {
-          setState(() {
-            _isLoading = false;
-            _error = state.message;
-          });
+        } else if (state is RoomFailure) {
+          if (_isLoading) {
+            setState(() {
+              _isLoading = false;
+              _error = state.message;
+            });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.message),
+              backgroundColor: AppColors.red,
+              behavior: SnackBarBehavior.floating,
+            ));
+          }
         } else if (state is RoomLeft ||
             state is RoomDeleted ||
             state is RoomUpdated ||
@@ -64,24 +76,32 @@ class _RoomScreenState extends State<RoomScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 4),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('My Rooms',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('Rooms you created & joined',
-                        style:
-                            TextStyle(color: AppColors.textGrey, fontSize: 13)),
+                    const Text(
+                      'My Joined Rooms',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Manage your active collaborations',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.45),
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Expanded(child: _buildBody()),
             ],
           ),
@@ -93,7 +113,8 @@ class _RoomScreenState extends State<RoomScreen> {
   Widget _buildBody() {
     if (_isLoading) {
       return const Center(
-          child: CircularProgressIndicator(color: AppColors.primaryCyan));
+        child: CircularProgressIndicator(color: AppColors.primaryCyan),
+      );
     }
     if (_error != null) {
       return Center(
@@ -102,14 +123,17 @@ class _RoomScreenState extends State<RoomScreen> {
           children: [
             const Icon(Icons.wifi_off, color: AppColors.textGrey, size: 48),
             const SizedBox(height: 16),
-            Text(_error!,
-                style:
-                    const TextStyle(color: AppColors.textGrey, fontSize: 14)),
+            Text(
+              _error!,
+              style: const TextStyle(color: AppColors.textGrey, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _reload,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryCyan),
+                backgroundColor: AppColors.primaryCyan,
+              ),
               child: const Text('Retry',
                   style: TextStyle(color: Color(0xFF003642))),
             ),
@@ -118,38 +142,85 @@ class _RoomScreenState extends State<RoomScreen> {
       );
     }
     if (_rooms.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.inbox_outlined, color: AppColors.textGrey, size: 56),
-            SizedBox(height: 16),
-            Text('No rooms yet',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('Create or join a room to get started.',
-                style: TextStyle(color: AppColors.textGrey, fontSize: 13)),
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.cardBg,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.borderColor),
+              ),
+              child: const Icon(Icons.inbox_outlined,
+                  color: AppColors.textGrey, size: 36),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'No rooms yet',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Create or join a room to get started.',
+              style: TextStyle(color: AppColors.textGrey, fontSize: 13),
+            ),
           ],
         ),
       );
     }
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      itemCount: _rooms.length,
-      separatorBuilder: (context, i) => const SizedBox(height: 12),
-      itemBuilder: (context, i) {
-        final room = _rooms[i];
-        return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => RoomDetailScreen(room: room)),
+    return Stack(
+      children: [
+        ListView.separated(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
+          itemCount: _rooms.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 14),
+          itemBuilder: (context, i) {
+            final room = _rooms[i];
+            return GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => RoomDetailScreen(room: room),
+                ),
+              ),
+              child: _RoomCard(room: room),
+            );
+          },
+        ),
+        // Floating action button
+        Positioned(
+          bottom: 24,
+          right: 20,
+          child: GestureDetector(
+            onTap: () {
+              // TODO: navigate to create/join room
+            },
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: AppColors.primaryCyan,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryCyan.withOpacity(0.4),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.add, color: Colors.black87, size: 26),
+            ),
           ),
-          child: _RoomCard(room: room),
-        );
-      },
+        ),
+      ],
     );
   }
 }
@@ -160,49 +231,162 @@ class _RoomCard extends StatelessWidget {
   final RoomEntity room;
   const _RoomCard({required this.room});
 
+  Color _statusColor(String status) {
+    return switch (status) {
+      'open' => AppColors.primaryCyan,
+      'ongoing' || 'in_progress' => AppColors.primaryCyan,
+      'matching' => Colors.orange,
+      'completed' => AppColors.mintGreen,
+      _ => AppColors.textGrey,
+    };
+  }
+
+  String _statusLabel(String status) {
+    return switch (status) {
+      'open' => 'OPEN',
+      'ongoing' || 'in_progress' => 'IN PROGRESS',
+      'matching' => 'MATCHING',
+      'completed' => 'COMPLETED',
+      'closed' => 'CLOSED',
+      _ => status.toUpperCase(),
+    };
+  }
+
+  bool get _isCompleted =>
+      room.status == 'completed' || room.status == 'closed';
+
   @override
   Widget build(BuildContext context) {
-    final color =
-        room.status == 'open' ? AppColors.primaryCyan : AppColors.mintGreen;
+    final statusColor = _statusColor(room.status);
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderColor),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: AppColors.borderColor,
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Row: title + badge ──
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(room.projectTheme,
-                    style: TextStyle(
-                        color: color,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      room.projectTheme.toUpperCase(),
+                      style: TextStyle(
+                        color: statusColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.6,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      room.roomCode,
+                      style: const TextStyle(
+                        color: AppColors.textGrey,
+                        fontSize: 11,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              _StatusBadge(status: room.status),
+              const SizedBox(width: 10),
+              _StatusBadge(
+                status: room.status,
+                label: _statusLabel(room.status),
+                color: statusColor,
+              ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(room.roomCode,
-              style: const TextStyle(
-                  color: AppColors.textGrey, fontSize: 12, letterSpacing: 1)),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+
+          // ── Members row ──
           Row(
             children: [
               const Icon(Icons.people_outline,
                   color: AppColors.textGrey, size: 14),
-              const SizedBox(width: 4),
+              const SizedBox(width: 6),
               Text(
-                  '${room.maxPerGroup} per group  •  ${room.numberOfGroups} groups',
-                  style: const TextStyle(
-                      color: AppColors.textGrey, fontSize: 11)),
+                '${room.maxPerGroup} members',
+                style: const TextStyle(
+                  color: AppColors.textGrey,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // ── Divider ──
+          Container(height: 1, color: AppColors.borderColor),
+          const SizedBox(height: 14),
+
+          // ── Bottom row ──
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    _isCompleted
+                        ? Icons.check_circle_outline
+                        : Icons.calendar_today_outlined,
+                    color: AppColors.textGrey,
+                    size: 13,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    _isCompleted ? 'Project Finished' : 'Next Milestone',
+                    style: const TextStyle(
+                      color: AppColors.textGrey,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+              if (_isCompleted)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.mintGreen.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                        color: AppColors.mintGreen.withOpacity(0.3)),
+                  ),
+                  child: const Text(
+                    'Archived',
+                    style: TextStyle(
+                      color: AppColors.mintGreen,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              else
+                Text(
+                  'Due in 9 days',
+                  style: TextStyle(
+                    color: room.status == 'matching'
+                        ? Colors.redAccent
+                        : Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
             ],
           ),
         ],
@@ -215,26 +399,33 @@ class _RoomCard extends StatelessWidget {
 
 class _StatusBadge extends StatelessWidget {
   final String status;
-  const _StatusBadge({required this.status});
+  final String label;
+  final Color color;
+
+  const _StatusBadge({
+    required this.status,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final color = switch (status) {
-      'open' => AppColors.primaryCyan,
-      'ongoing' => AppColors.mintGreen,
-      'matching' => Colors.orange,
-      _ => AppColors.textGrey,
-    };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
+        border: Border.all(color: color.withOpacity(0.35)),
       ),
-      child: Text(status.toUpperCase(),
-          style: TextStyle(
-              color: color, fontSize: 9, fontWeight: FontWeight.bold)),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
+      ),
     );
   }
 }
@@ -351,6 +542,38 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
     );
   }
 
+  String _statusLabel(String status) {
+    return switch (status) {
+      'open' => 'OPEN',
+      'ongoing' || 'in_progress' => 'IN PROGRESS',
+      'matching' => 'MATCHING',
+      'completed' => 'COMPLETED',
+      'closed' => 'CLOSED',
+      _ => status.toUpperCase(),
+    };
+  }
+
+  Color _statusColor(String status) {
+    return switch (status) {
+      'open' => AppColors.primaryCyan,
+      'ongoing' || 'in_progress' => AppColors.primaryCyan,
+      'matching' => Colors.orange,
+      'completed' => AppColors.mintGreen,
+      _ => AppColors.textGrey,
+    };
+  }
+
+  // completion % mock: bisa diganti dari data nyata
+  int get _completionPercent {
+    return switch (_room.status) {
+      'open' => 0,
+      'matching' => 20,
+      'ongoing' || 'in_progress' => 64,
+      'completed' => 100,
+      _ => 0,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<RoomBloc, RoomState>(
@@ -369,6 +592,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
             backgroundColor: AppColors.mintGreen,
           ));
         } else if (state is RoomFailure) {
+          setState(() => _loadingMembers = false);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(state.message),
             backgroundColor: AppColors.red,
@@ -380,17 +604,21 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
         appBar: AppBar(
           backgroundColor: AppColors.darkBlueBg,
           elevation: 0,
-          centerTitle: true,
+          centerTitle: false,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded,
                 color: AppColors.primaryCyan, size: 18),
             onPressed: () => Navigator.pop(context),
           ),
-          title: Text(_room.projectTheme,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16)),
+          title: Text(
+            _room.projectTheme.toUpperCase(),
+            style: const TextStyle(
+              color: AppColors.primaryCyan,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              letterSpacing: 0.8,
+            ),
+          ),
           actions: [
             if (_isOwner) ...[
               IconButton(
@@ -400,21 +628,33 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                 tooltip: 'Edit Room',
               ),
               IconButton(
-                icon:
-                    const Icon(Icons.delete_outline, color: AppColors.red, size: 20),
+                icon: const Icon(Icons.delete_outline,
+                    color: AppColors.red, size: 20),
                 onPressed: _showDeleteDialog,
                 tooltip: 'Delete Room',
               ),
             ] else
               Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: TextButton(
-                  onPressed: _showLeaveDialog,
-                  child: const Text('LEAVE',
+                padding: const EdgeInsets.only(right: 12),
+                child: GestureDetector(
+                  onTap: _showLeaveDialog,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.red,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'LEAVE TEAM',
                       style: TextStyle(
-                          color: AppColors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12)),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
                 ),
               ),
           ],
@@ -424,14 +664,47 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildInfoCard(),
-              const SizedBox(height: 24),
-              const Text('Members',
-                  style: TextStyle(
+              // ── Project Status Card ──
+              _buildStatusCard(),
+              const SizedBox(height: 28),
+
+              // ── Team Members ──
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Team Members',
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
-                      fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // TODO: view all members
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            color: AppColors.primaryCyan.withOpacity(0.8),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: AppColors.primaryCyan.withOpacity(0.8),
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
               _buildMembersList(),
               const SizedBox(height: 30),
             ],
@@ -441,60 +714,161 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
     );
   }
 
-  Widget _buildInfoCard() {
+  Widget _buildStatusCard() {
+    final statusColor = _statusColor(_room.status);
+    final completion = _completionPercent;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Header ──
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('ROOM INFO',
-                  style: TextStyle(
-                      color: AppColors.textGrey,
-                      fontSize: 10,
-                      letterSpacing: 1.5)),
-              _StatusBadge(status: _room.status),
+              Text(
+                'PROJECT STATUS',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 10,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              _StatusBadge(
+                status: _room.status,
+                label: _statusLabel(_room.status),
+                color: statusColor,
+              ),
             ],
           ),
-          const SizedBox(height: 12),
-          _infoRow(Icons.vpn_key_outlined, 'Code', _room.roomCode,
-              copyable: true),
-          const SizedBox(height: 8),
-          _infoRow(Icons.people_outline, 'Capacity',
-              '${_room.maxPerGroup} per group · ${_room.numberOfGroups} groups'),
-          if (_room.roles.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            const Text('ROLES',
+          const SizedBox(height: 10),
+
+          // ── Status title ──
+          Text(
+            _statusLabel(_room.status)
+                .split(' ')
+                .map((w) =>
+                    w[0].toUpperCase() + w.substring(1).toLowerCase())
+                .join(' '),
+            style: TextStyle(
+              color: statusColor,
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // ── Completion bar ──
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Completion',
+                style: TextStyle(color: Colors.white, fontSize: 13),
+              ),
+              Text(
+                '$completion%',
                 style: TextStyle(
-                    color: AppColors.textGrey,
-                    fontSize: 10,
-                    letterSpacing: 1.5)),
-            const SizedBox(height: 8),
+                  color: statusColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: completion / 100,
+              minHeight: 7,
+              backgroundColor: AppColors.borderColor,
+              valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // ── Deadline / Info row ──
+          Row(
+            children: [
+              Icon(Icons.calendar_today_outlined,
+                  color: Colors.white.withOpacity(0.5), size: 13),
+              const SizedBox(width: 6),
+              Text(
+                'Deadline: Oct 24, 2026',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+
+          // ── Roles & Code (collapsible info) ──
+          if (_room.roles.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Container(height: 1, color: AppColors.borderColor),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Icon(Icons.vpn_key_outlined,
+                    color: Colors.white.withOpacity(0.4), size: 13),
+                const SizedBox(width: 6),
+                Text(
+                  _room.roomCode,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 12,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    Clipboard.setData(
+                        ClipboardData(text: _room.roomCode));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Code copied!'),
+                        duration: Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  child: Icon(Icons.copy_rounded,
+                      color: Colors.white.withOpacity(0.4), size: 14),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 6,
               children: _room.roles
                   .map((r) => Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                            horizontal: 12, vertical: 5),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryCyan.withValues(alpha: 0.1),
+                          color: AppColors.primaryCyan.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                               color:
-                                  AppColors.primaryCyan.withValues(alpha: 0.3)),
+                                  AppColors.primaryCyan.withOpacity(0.25)),
                         ),
-                        child: Text(r,
-                            style: const TextStyle(
-                                color: AppColors.primaryCyan, fontSize: 12)),
+                        child: Text(
+                          r,
+                          style: const TextStyle(
+                              color: AppColors.primaryCyan, fontSize: 11),
+                        ),
                       ))
                   .toList(),
             ),
@@ -517,85 +891,201 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
       return const Padding(
         padding: EdgeInsets.all(24),
         child: Center(
-            child: Text('No members yet',
-                style: TextStyle(color: AppColors.textGrey))),
+          child: Text('No members yet',
+              style: TextStyle(color: AppColors.textGrey)),
+        ),
       );
     }
     return Column(
-      children: _members
-          .map((m) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(14),
+      children: _members.map((m) => _MemberCard(member: m)).toList(),
+    );
+  }
+}
+
+// ── Member Card ────────────────────────────────────────────────────────────────
+
+class _MemberCard extends StatelessWidget {
+  final MemberEntity member;
+  const _MemberCard({required this.member});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Top: avatar + name + role + chat icon ──
+          Row(
+            children: [
+              // Avatar
+              Stack(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.borderColor,
+                    ),
+                    child: const Icon(Icons.person,
+                        color: Colors.white38, size: 26),
+                  ),
+                  Positioned(
+                    bottom: 2,
+                    right: 2,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: AppColors.mintGreen,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: AppColors.cardBg, width: 1.5),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      member.user != null
+                          ? '@${member.user!.username}'
+                          : '@user${member.userId}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    if (member.primaryRole != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        member.primaryRole!.toUpperCase(),
+                        style: TextStyle(
+                          color: AppColors.primaryCyan.withOpacity(0.8),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              // Chat icon
+              Container(
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
-                  color: AppColors.cardBg,
-                  borderRadius: BorderRadius.circular(14),
+                  color: AppColors.darkBlueBg,
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.borderColor),
                 ),
-                child: Row(
+                child: const Icon(
+                  Icons.chat_bubble_outline_rounded,
+                  color: AppColors.textGrey,
+                  size: 16,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Container(height: 1, color: AppColors.borderColor),
+          const SizedBox(height: 12),
+
+          // ── Bottom: expertise + activity ──
+          Row(
+            children: [
+              // Expertise
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CircleAvatar(
-                      backgroundColor: AppColors.borderColor,
-                      child: Icon(Icons.person,
-                          color: Colors.white38, size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              m.user != null
-                                  ? '@${m.user!.username}'
-                                  : '@user${m.userId}',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
-                          if (m.primaryRole != null)
-                            Text(m.primaryRole!,
-                                style: const TextStyle(
-                                    color: AppColors.textGrey, fontSize: 11)),
-                        ],
+                    Text(
+                      'EXPERTISE',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.4),
+                        fontSize: 9,
+                        letterSpacing: 1.2,
+                        fontWeight: FontWeight.w700,
                       ),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: _expertiseTags(member),
                     ),
                   ],
                 ),
-              ))
-          .toList(),
+              ),
+              const SizedBox(width: 12),
+              // Activity
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'ACTIVITY',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.4),
+                      fontSize: 9,
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'High (98%)',
+                    style: TextStyle(
+                      color: AppColors.mintGreen,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value,
-      {bool copyable = false}) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.textGrey, size: 16),
-        const SizedBox(width: 8),
-        Text('$label: ',
-            style:
-                const TextStyle(color: AppColors.textGrey, fontSize: 13)),
-        Expanded(
-          child: Text(value,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500),
-              overflow: TextOverflow.ellipsis),
-        ),
-        if (copyable)
-          GestureDetector(
-            onTap: () {
-              Clipboard.setData(ClipboardData(text: value));
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Code copied!'),
-                duration: Duration(seconds: 2),
-                behavior: SnackBarBehavior.floating,
-              ));
-            },
-            child: const Icon(Icons.copy_rounded,
-                color: AppColors.textGrey, size: 14),
-          ),
-      ],
-    );
+  List<Widget> _expertiseTags(MemberEntity m) {
+    // Gunakan data expertise dari user jika ada, fallback ke role
+    final tags = <String>[];
+    if (m.primaryRole != null) tags.add(m.primaryRole!);
+    if (tags.isEmpty) tags.add('General');
+
+    return tags
+        .map((t) => Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.darkBlueBg,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppColors.borderColor),
+              ),
+              child: Text(
+                t,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                ),
+              ),
+            ))
+        .toList();
   }
 }
 
@@ -726,13 +1216,12 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                             : AppColors.cardBg,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                            color: selected
-                                ? color
-                                : AppColors.borderColor),
+                            color: selected ? color : AppColors.borderColor),
                       ),
                       child: Text(s.toUpperCase(),
                           style: TextStyle(
-                              color: selected ? color : AppColors.textGrey,
+                              color:
+                                  selected ? color : AppColors.textGrey,
                               fontSize: 11,
                               fontWeight: FontWeight.bold)),
                     ),
@@ -816,10 +1305,10 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed:
-                      (_themeCtrl.text.trim().isNotEmpty && _roles.length >= 2)
-                          ? _save
-                          : null,
+                  onPressed: (_themeCtrl.text.trim().isNotEmpty &&
+                          _roles.length >= 2)
+                      ? _save
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryCyan,
                     foregroundColor: Colors.black87,
