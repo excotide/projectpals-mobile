@@ -1,5 +1,4 @@
 // ── room_edit_screen.dart ─────────────────────────────────────────────────────
-// Taruh di: lib/features/room/presentation/screens/room_edit_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,15 +16,13 @@ class RoomEditScreen extends StatefulWidget {
 }
 
 class _RoomEditScreenState extends State<RoomEditScreen> {
-  // ── Colors ──
-  static const Color _bg          = Color(0xFF0D1117);
-  static const Color _cardBg      = Color(0xFF141D2E);
-  static const Color _cardBg2     = Color(0xFF1A2235);
+  // ── BG sama dengan ProfileScreen ──
+  static Color get _bgColor => AppColors.darkBlueBg;
+
   static const Color _accent      = Color(0xFF7C9EFF);
   static const Color _accentLight = Color(0xFFB8CDFF);
   static const Color _accentDark  = Color(0xFF4B6EF5);
   static const Color _green       = Color(0xFF4ADE80);
-  static const Color _border      = Color(0x14FFFFFF);
   static const Color _navyDark    = Color(0xFF0D1B3E);
 
   late RoomEntity _room;
@@ -60,7 +57,6 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
     _selectedEnvironment = 'Remote';
   }
 
-  // ── FIXED: sesuaikan dengan parameter RoomUpdateRequested di BLoC ──
   void _saveChanges() {
     final Map<String, dynamic> data = {};
     if (_selectedRole != null) data['primary_role'] = _selectedRole;
@@ -95,7 +91,8 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('BATAL', style: TextStyle(color: Colors.white60)),
+            child: const Text('BATAL',
+                style: TextStyle(color: Colors.white60)),
           ),
           TextButton(
             onPressed: () {
@@ -105,7 +102,8 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
             },
             child: const Text(
               'KELUAR',
-              style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: AppColors.red, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -137,7 +135,8 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: _bg,
+        // ── BG sama dengan ProfileScreen ──
+        backgroundColor: _bgColor,
         body: SafeArea(
           child: Column(
             children: [
@@ -150,6 +149,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                     children: [
                       _buildRoomSummaryCard(),
                       const SizedBox(height: 16),
+                      // ── Profile card dengan button di dalam ──
                       _buildProfileCard(),
                       const SizedBox(height: 24),
                       _buildSectionLabel('PILIH PERAN KAMU'),
@@ -160,9 +160,6 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                       const SizedBox(height: 10),
                       _buildEnvironmentSelector(),
                       const SizedBox(height: 32),
-                      _buildSaveButton(),
-                      const SizedBox(height: 16),
-                      _buildLeaveButton(),
                     ],
                   ),
                 ),
@@ -205,9 +202,9 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: _cardBg,
+              color: AppColors.cardBg,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: _border),
+              border: Border.all(color: AppColors.borderColor),
             ),
             child: Icon(Icons.more_vert,
                 color: Colors.white.withOpacity(0.5), size: 18),
@@ -221,9 +218,10 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
   Widget _buildRoomSummaryCard() {
     return Container(
       decoration: BoxDecoration(
-        color: _cardBg,
+        // ── card bg sama dengan ProfileScreen ──
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _border),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         children: [
@@ -231,13 +229,14 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Row(
               children: [
+                // ── Icon info — bg biru muda ──
                 Container(
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: _accent.withOpacity(0.12),
+                    color: _accent.withOpacity(0.22),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _accent.withOpacity(0.3)),
+                    border: Border.all(color: _accent.withOpacity(0.5)),
                   ),
                   child: const Icon(Icons.info_outline_rounded,
                       color: _accent, size: 14),
@@ -314,14 +313,17 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
     );
   }
 
+  // ── Profile Card — button Edit & Leave di DALAM card ──────────────────────
+
   Widget _buildProfileCard() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _cardBg2,
+        // ── card bg sama dengan ProfileScreen ──
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _accent.withOpacity(0.18)),
+        border: Border.all(color: AppColors.borderColor),
         boxShadow: [
           BoxShadow(
             color: _accent.withOpacity(0.06),
@@ -333,6 +335,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Header ──
           Row(
             children: [
               Container(
@@ -348,7 +351,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
               ),
               const SizedBox(width: 10),
               const Text(
-                'Your Profile In Room',
+                'Your Profile in Room',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -360,12 +363,15 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           const SizedBox(height: 14),
           Divider(color: Colors.white.withOpacity(0.06), height: 1),
           const SizedBox(height: 14),
+
+          // ── Current role + environment ──
           Row(
             children: [
               Expanded(
                 child: _InfoCell(
                   label: 'CURRENT ROLE',
-                  value: '● ${_selectedRole ?? (_room.roles.isNotEmpty ? _room.roles.first : 'Belum dipilih')}',
+                  value:
+                      '● ${_selectedRole ?? (_room.roles.isNotEmpty ? _room.roles.first : 'Belum dipilih')}',
                   valueColor: _green,
                 ),
               ),
@@ -377,6 +383,93 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 18),
+
+          // ── Edit Role & Environment button — di DALAM card ──
+          BlocBuilder<RoomBloc, RoomState>(
+            builder: (context, state) {
+              final isLoading = state is RoomLoading;
+              return GestureDetector(
+                onTap: isLoading ? null : _saveChanges,
+                child: Container(
+                  width: double.infinity,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [_accent, _accentDark],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _accentDark.withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.edit_outlined,
+                                  color: Colors.white, size: 16),
+                              SizedBox(width: 8),
+                              Text(
+                                'Edit Role & Environment',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+
+          // ── Leave Room button — di DALAM card ──
+          GestureDetector(
+            onTap: _showLeaveConfirm,
+            child: Container(
+              width: double.infinity,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: AppColors.red.withOpacity(0.45), width: 1.2),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.exit_to_app_rounded,
+                      color: AppColors.red.withOpacity(0.8), size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Leave Room',
+                    style: TextStyle(
+                      color: AppColors.red.withOpacity(0.8),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -405,12 +498,15 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: isSelected ? _accent.withOpacity(0.08) : _cardBg,
+              color: isSelected
+                  ? _accent.withOpacity(0.08)
+                  : AppColors.cardBg,
               borderRadius: BorderRadius.circular(13),
               border: Border.all(
-                color: isSelected ? _accent : _border,
+                color: isSelected ? _accent : AppColors.borderColor,
                 width: isSelected ? 1.5 : 1,
               ),
             ),
@@ -432,7 +528,9 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                   ),
                   child: Icon(
                     Icons.code_rounded,
-                    color: isSelected ? _accent : Colors.white.withOpacity(0.3),
+                    color: isSelected
+                        ? _accent
+                        : Colors.white.withOpacity(0.3),
                     size: 17,
                   ),
                 ),
@@ -481,10 +579,12 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             decoration: BoxDecoration(
-              color: isSelected ? _accent.withOpacity(0.08) : _cardBg,
+              color: isSelected
+                  ? _accent.withOpacity(0.08)
+                  : AppColors.cardBg,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? _accent : _border,
+                color: isSelected ? _accent : AppColors.borderColor,
                 width: isSelected ? 1.5 : 1,
               ),
             ),
@@ -493,7 +593,9 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
               children: [
                 Icon(
                   _envIcons[env] ?? Icons.tune_rounded,
-                  color: isSelected ? _accent : Colors.white.withOpacity(0.3),
+                  color: isSelected
+                      ? _accent
+                      : Colors.white.withOpacity(0.3),
                   size: 16,
                 ),
                 const SizedBox(width: 8),
@@ -510,92 +612,6 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           ),
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildSaveButton() {
-    return BlocBuilder<RoomBloc, RoomState>(
-      builder: (context, state) {
-        final isLoading = state is RoomLoading;
-        return GestureDetector(
-          onTap: isLoading ? null : _saveChanges,
-          child: Container(
-            width: double.infinity,
-            height: 52,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [_accent, _accentDark],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: _accentDark.withOpacity(0.35),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Center(
-              child: isLoading
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.edit_outlined, color: Colors.white, size: 17),
-                        SizedBox(width: 8),
-                        Text(
-                          'Edit Role & Environment',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildLeaveButton() {
-    return GestureDetector(
-      onTap: _showLeaveConfirm,
-      child: Container(
-        width: double.infinity,
-        height: 52,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-              color: AppColors.red.withOpacity(0.4), width: 1.2),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.exit_to_app_rounded,
-                color: AppColors.red.withOpacity(0.8), size: 17),
-            const SizedBox(width: 8),
-            Text(
-              'Leave Room',
-              style: TextStyle(
-                color: AppColors.red.withOpacity(0.8),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

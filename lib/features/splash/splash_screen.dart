@@ -17,6 +17,15 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _textOpacity;
   late Animation<double> _subTextOpacity;
 
+  // ── Color palette (sesuai design terbaru) ──
+  static const Color _bg1        = Color(0xFF0D1117);
+  static const Color _bg2        = Color(0xFF0D1B3E);
+  static const Color _accent     = Color(0xFF7C9EFF);
+  static const Color _accentLight= Color(0xFFB8CDFF);
+  static const Color _accentBlue = Color(0xFF4B6EF5);
+  static const Color _accentDark = Color(0xFF3B5FD9);
+  static const Color _green      = Color(0xFF4ADE80);
+
   @override
   void initState() {
     super.initState();
@@ -34,8 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
     _rocketFlyUp = Tween<double>(begin: 50.0, end: -300.0).animate(
       CurvedAnimation(
           parent: _controller,
-          curve:
-              const Interval(0.2, 0.7, curve: Curves.fastOutSlowIn)),
+          curve: const Interval(0.2, 0.7, curve: Curves.fastOutSlowIn)),
     );
     _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -77,13 +85,14 @@ class _SplashScreenState extends State<SplashScreen>
           width: double.infinity,
           height: double.infinity,
           decoration: const BoxDecoration(
+            // ── Background gradient gelap navy → hitam, sesuai tema app ──
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFF020A1A),
-                Color(0xFF081B4B),
-                Color(0xFF020A1A),
+                Color(0xFF0D1117), // hitam gelap
+                Color(0xFF0D1B3E), // navy gelap
+                Color(0xFF0D1117), // hitam gelap
               ],
             ),
           ),
@@ -93,60 +102,121 @@ class _SplashScreenState extends State<SplashScreen>
               return Stack(
                 alignment: Alignment.center,
                 children: [
+                  // ── Glow lingkaran biru di tengah ──
                   Container(
-                    width: 250,
-                    height: 250,
+                    width: 280,
+                    height: 280,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.blue.withValues(alpha: 0.1),
-                          blurRadius: 100,
-                          spreadRadius: 50,
+                          color: const Color(0xFF4B6EF5).withOpacity(0.15),
+                          blurRadius: 120,
+                          spreadRadius: 60,
                         ),
                       ],
                     ),
                   ),
+
+                  // ── Glow kedua, lebih kecil, lebih terang ──
+                  Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF7C9EFF).withOpacity(0.12),
+                          blurRadius: 80,
+                          spreadRadius: 30,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // ── Roket terbang ke atas ──
                   Transform.translate(
                     offset: Offset(0, _rocketFlyUp.value),
                     child: Opacity(
                       opacity: _rocketOpacity.value,
-                      child: const Icon(Icons.rocket_launch,
-                          color: Colors.blueAccent, size: 60),
+                      child: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [_accent, _accentLight],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ).createShader(bounds),
+                        child: const Icon(
+                          Icons.rocket_launch_rounded,
+                          color: Colors.white, // warna di-override ShaderMask
+                          size: 64,
+                        ),
+                      ),
                     ),
                   ),
+
+                  // ── Teks PROJECT PALS + subtitle ──
                   Opacity(
                     opacity: _textOpacity.value,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          'PROJECT',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 4,
+                        // "PROJECT" — putih
+                        ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Colors.white, Color(0xFFE0E8FF)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ).createShader(bounds),
+                          child: const Text(
+                            'PROJECT',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 6,
+                            ),
                           ),
                         ),
-                        Text(
-                          'PALS',
-                          style: TextStyle(
-                            color: Colors.blue.shade300,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w300,
-                            letterSpacing: 8,
+
+                        // "PALS" — gradient biru
+                        ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [_accent, _accentLight],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ).createShader(bounds),
+                          child: const Text(
+                            'PALS',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontWeight: FontWeight.w300,
+                              letterSpacing: 10,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 40),
+
+                        const SizedBox(height: 44),
+
+                        // Subtitle
                         Opacity(
                           opacity: _subTextOpacity.value,
-                          child: const Text(
-                            'VIRTUAL COLLABORATION ENGINE',
-                            style: TextStyle(
-                                color: Colors.white54,
-                                fontSize: 10,
-                                letterSpacing: 2),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'VIRTUAL COLLABORATION ENGINE',
+                                style: TextStyle(
+                                  color: Color(0x80FFFFFF),
+                                  fontSize: 10,
+                                  letterSpacing: 2.5,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // ── Loading dots ──
+                              _LoadingDots(),
+                            ],
                           ),
                         ),
                       ],
@@ -157,6 +227,43 @@ class _SplashScreenState extends State<SplashScreen>
             },
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ── Loading Dots ───────────────────────────────────────────────────────────────
+// Tiga titik kecil animasi sebagai indikator loading
+
+class _LoadingDots extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _dot(const Color(0xFF7C9EFF)),
+        const SizedBox(width: 6),
+        _dot(const Color(0xFFB8CDFF)),
+        const SizedBox(width: 6),
+        _dot(const Color(0xFF4B6EF5)),
+      ],
+    );
+  }
+
+  Widget _dot(Color color) {
+    return Container(
+      width: 5,
+      height: 5,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.5),
+            blurRadius: 6,
+            spreadRadius: 1,
+          ),
+        ],
       ),
     );
   }

@@ -3,6 +3,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_colors.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 
+// ── Accent palette ────────────────────────────────────────────
+const Color _accentBlue     = Color(0xFF5B7FFF);
+const Color _accentBlueDark = Color(0xFF4B6EF5);
+const Color _accentBlueLight = Color(0xFF7C9EFF);
+const Color _accentBluePale  = Color(0xFFB8CDFF);
+const Color _accentGreen    = Color(0xFF4ADE80);
+const Color _accentPurple   = Color(0xFF8B5CF6);
+const Color _accentTeal     = Color(0xFF2D9B6F);
+const Color _accentIndigo   = Color(0xFF3B4FD9);
+const Color _accentYellow   = Color(0xFFFBBF24);
+
+Color _statusColor(String status) {
+  switch (status) {
+    case 'ongoing':
+    case 'in_progress':
+    case 'matched':
+      return _accentGreen;
+    case 'matching':
+      return _accentYellow;
+    case 'completed':
+    case 'closed':
+      return Colors.white38;
+    default:
+      return Colors.white38;
+  }
+}
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -135,18 +162,25 @@ class ProfileScreen extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Hero: hanya bg cyan + avatar + @username
+// Hero: bg gradient biru + avatar + @username
 // ─────────────────────────────────────────────────────────────
 class _ProfileHero extends StatelessWidget {
   final dynamic user;
   const _ProfileHero({required this.user});
+
+  // BG halaman — sama dengan ProfileScreen
+  static Color get _bgColor => AppColors.darkBlueBg;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.primaryCyan,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF4B6EF5), Color(0xFF7C9EFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(32),
           bottomRight: Radius.circular(32),
@@ -165,12 +199,13 @@ class _ProfileHero extends StatelessWidget {
                 height: 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF002B35),
-                  border: Border.all(
-                      color: Colors.white.withOpacity(0.5), width: 2.5),
+                  // BG card — sama dengan ProfileScreen
+                  color: AppColors.cardBg,
+                  // Border avatar stack — ikut cardBg biar seamless
+                  border: Border.all(color: AppColors.cardBg, width: 2),
                 ),
                 child: const Icon(Icons.person,
-                    color: AppColors.primaryCyan, size: 48),
+                    color: _accentBlue, size: 48),
               ),
               Positioned(
                 bottom: -2,
@@ -183,9 +218,9 @@ class _ProfileHero extends StatelessWidget {
                     height: 28,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFF002B35),
+                      color: _accentBlueDark,
                       border: Border.all(
-                          color: Colors.white.withOpacity(0.7), width: 1.5),
+                          color: Colors.white.withOpacity(0.4), width: 1.5),
                     ),
                     child: const Icon(Icons.edit,
                         color: Colors.white, size: 14),
@@ -200,7 +235,7 @@ class _ProfileHero extends StatelessWidget {
           Text(
             user != null ? '@${user.username}' : '@username',
             style: const TextStyle(
-              color: Color(0xFF003642),
+              color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.4,
@@ -248,7 +283,7 @@ class _ProfileInfoCard extends StatelessWidget {
               Text(
                 user != null ? '${user.name}' : 'Nickname',
                 style: const TextStyle(
-                  color: AppColors.primaryCyan,
+                  color: _accentBlue,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
@@ -278,12 +313,12 @@ class _ProfileInfoCard extends StatelessWidget {
               const SizedBox(height: 4),
               Row(
                 children: const [
-                  Icon(Icons.star, color: AppColors.mintGreen, size: 16),
+                  Icon(Icons.star, color: _accentGreen, size: 16),
                   SizedBox(width: 4),
                   Text(
                     '4.8',
                     style: TextStyle(
-                      color: AppColors.mintGreen,
+                      color: _accentGreen,
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
@@ -326,9 +361,9 @@ class _SectionHeader extends StatelessWidget {
               children: [
                 Text(actionLabel ?? 'See all',
                     style: const TextStyle(
-                        color: AppColors.primaryCyan, fontSize: 13)),
+                        color: _accentBlueLight, fontSize: 13)),
                 const Icon(Icons.arrow_forward_ios,
-                    color: AppColors.primaryCyan, size: 12),
+                    color: _accentBlueLight, size: 12),
               ],
             ),
           ),
@@ -369,13 +404,11 @@ class _PreferenceChipsState extends State<_PreferenceChips> {
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
                 color: active
-                    ? AppColors.primaryCyan.withOpacity(0.18)
+                    ? _accentBlue.withOpacity(0.35)
                     : AppColors.cardBg,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: active
-                      ? AppColors.primaryCyan
-                      : AppColors.borderColor,
+                  color: active ? _accentBlue : AppColors.borderColor,
                   width: active ? 1.5 : 1,
                 ),
               ),
@@ -383,15 +416,13 @@ class _PreferenceChipsState extends State<_PreferenceChips> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(_options[i]['icon'] as IconData,
-                      color: active
-                          ? AppColors.primaryCyan
-                          : AppColors.textGrey,
+                      color: active ? _accentBlueLight : AppColors.textGrey,
                       size: 22),
                   const SizedBox(height: 6),
                   Text(_options[i]['label'] as String,
                       style: TextStyle(
                         color: active
-                            ? AppColors.primaryCyan
+                            ? _accentBlueLight
                             : AppColors.textGrey,
                         fontSize: 12,
                         fontWeight: active
@@ -493,7 +524,14 @@ class _ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted = status == 'COMPLETED';
+    final statusLower = status.toLowerCase();
+    final statusColor = switch (statusLower) {
+      'ongoing' || 'in_progress' || 'matched' => _accentGreen,
+      'matching'                               => _accentYellow,
+      'completed' || 'closed'                  => Colors.white38,
+      _                                        => Colors.white38,
+    };
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -520,23 +558,14 @@ class _ProjectCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isCompleted
-                      ? AppColors.primaryCyan.withOpacity(0.15)
-                      : Colors.orange.withOpacity(0.15),
+                  color: statusColor.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isCompleted
-                        ? AppColors.primaryCyan
-                        : Colors.orange,
-                    width: 1,
-                  ),
+                  border: Border.all(color: statusColor, width: 1),
                 ),
                 child: Text(
                   status,
                   style: TextStyle(
-                    color: isCompleted
-                        ? AppColors.primaryCyan
-                        : Colors.orange,
+                    color: statusColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,

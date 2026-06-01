@@ -15,6 +15,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  // ── Palette dekoratif ──
+  static const Color _accent        = Color(0xFF7C9EFF);
+  static const Color _accentLight   = Color(0xFFB8CDFF);
+  static const Color _accentBlue    = Color(0xFF4B6EF5);
+  static const Color _accentVibrant = Color(0xFF5B7FFF);
+  static const Color _green         = Color(0xFF4ADE80);
+  static const Color _navyDark      = Color(0xFF0D1B3E);
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
@@ -24,6 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             : 'there';
 
         return Scaffold(
+          // BG halaman — sama dengan ProfileScreen
           backgroundColor: AppColors.darkBlueBg,
           body: SafeArea(
             child: SingleChildScrollView(
@@ -32,20 +41,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Header ──
+                  // ── Header ──────────────────────────────────────────────
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
-                          // Avatar circle dengan warna seperti design
+                          // Avatar — gradient biru palette baru
                           Container(
                             width: 46,
                             height: 46,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
+                              gradient: LinearGradient(
+                                colors: [_accentBlue, _accent],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
@@ -57,10 +66,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Welcome Back,',
                                 style: TextStyle(
-                                    color: AppColors.textGrey, fontSize: 12),
+                                    color: Colors.white.withOpacity(0.4),
+                                    fontSize: 12),
                               ),
                               Text(
                                 displayName,
@@ -79,23 +89,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: Stack(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(8),
+                              width: 38,
+                              height: 38,
                               decoration: BoxDecoration(
-                                color: Colors.white10,
-                                shape: BoxShape.circle,
+                                color: const Color(0xFF1E2640),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color: Colors.white.withOpacity(0.08)),
                               ),
-                              child: const Icon(Icons.notifications_outlined,
-                                  color: Colors.white, size: 22),
+                              child: Icon(
+                                Icons.notifications_outlined,
+                                color: Colors.white.withOpacity(0.7),
+                                size: 19,
+                              ),
                             ),
                             Positioned(
-                              right: 4,
-                              top: 4,
+                              top: 8,
+                              right: 8,
                               child: Container(
-                                width: 10,
-                                height: 10,
+                                width: 8,
+                                height: 8,
                                 decoration: const BoxDecoration(
-                                    color: Colors.orange,
-                                    shape: BoxShape.circle),
+                                  color: _green,
+                                  shape: BoxShape.circle,
+                                ),
                               ),
                             ),
                           ],
@@ -105,13 +122,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── Active Projects Card ──
+                  // ── Active Projects Card ─────────────────────────────────
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryCyan,
+                      // BG card — sama dengan ProfileScreen
+                      color: AppColors.cardBg,
                       borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.borderColor),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _accentVibrant.withOpacity(0.08),
+                          blurRadius: 20,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,28 +145,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Active Projects',
-                              style: TextStyle(
-                                  color: Color(0xFF003642),
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold),
+                            // Gradient text label
+                            ShaderMask(
+                              shaderCallback: (bounds) =>
+                                  const LinearGradient(
+                                colors: [_accent, _accentLight],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ).createShader(bounds),
+                              child: const Text(
+                                'Active Projects',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ),
                             GestureDetector(
                               onTap: () =>
                                   MainScaffold.of(context)?.switchTab(2),
-                              child: const Row(
+                              child: Row(
                                 children: [
                                   Text(
                                     'More Details',
                                     style: TextStyle(
-                                        color: Color(0xFF003642),
+                                        color: _accent.withOpacity(0.8),
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600),
                                   ),
-                                  SizedBox(width: 4),
+                                  const SizedBox(width: 4),
                                   Icon(Icons.arrow_forward_ios,
-                                      size: 11, color: Color(0xFF003642)),
+                                      size: 11,
+                                      color: _accent.withOpacity(0.8)),
                                 ],
                               ),
                             ),
@@ -154,9 +190,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 14, vertical: 12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF002B35)
-                                  .withValues(alpha: 0.85),
+                              color: const Color(0xFF1A2035),
                               borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                  color: Colors.white.withOpacity(0.06)),
                             ),
                             child: Row(
                               mainAxisAlignment:
@@ -173,17 +210,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: AppColors.mintGreen
-                                        .withValues(alpha: 0.2),
+                                    color: _green.withOpacity(0.12),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                        color: AppColors.mintGreen,
+                                        color: _green.withOpacity(0.4),
                                         width: 1),
                                   ),
                                   child: const Text(
                                     'Day 3 · On Going',
                                     style: TextStyle(
-                                        color: AppColors.mintGreen,
+                                        color: _green,
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -197,7 +233,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 28),
 
-                  // ── Quick Access ──
+                  // ── Quick Access ─────────────────────────────────────────
                   const Text(
                     'Quick Access',
                     style: TextStyle(
@@ -225,7 +261,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 28),
 
-                  // ── Your Projects Team ──
+                  // ── Your Projects Team ───────────────────────────────────
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -239,16 +275,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       GestureDetector(
                         onTap: () =>
                             MainScaffold.of(context)?.switchTab(2),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Text(
                               'More Details',
                               style: TextStyle(
-                                  color: AppColors.textGrey, fontSize: 12),
+                                  color: Colors.white.withOpacity(0.4),
+                                  fontSize: 12),
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Icon(Icons.arrow_forward_ios,
-                                size: 11, color: AppColors.textGrey),
+                                size: 11,
+                                color: Colors.white.withOpacity(0.4)),
                           ],
                         ),
                       ),
@@ -256,20 +294,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 14),
 
-                  // Project item cards (dari state jika ada, atau placeholder)
+                  // Project items
                   if (state is AuthAuthenticated) ...[
                     _ProjectTeamItem(
                       name: state.user.name,
                       subtitle: 'Frontend · 3 months',
                       status: 'COMPLETED',
-                      statusColor: AppColors.mintGreen,
+                      statusColor: _green,
                     ),
                     const SizedBox(height: 10),
                     _ProjectTeamItem(
                       name: state.user.username,
                       subtitle: 'FullStack · 1 year',
                       status: 'COMPLETED',
-                      statusColor: AppColors.mintGreen,
+                      statusColor: _green,
                     ),
                   ] else ...[
                     _ProjectTeamItem(
@@ -285,12 +323,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: AppColors.primaryCyan,
-            onPressed: () => Navigator.push(
-                context, buildSlideRoute(const CreateRoomScreen())),
-            shape: const CircleBorder(),
-            child: const Icon(Icons.add, color: Color(0xFF003642), size: 30),
+          floatingActionButton: Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: [_accent, _accentLight],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: _accentVibrant.withOpacity(0.35),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: IconButton(
+              onPressed: () => Navigator.push(
+                  context, buildSlideRoute(const CreateRoomScreen())),
+              icon: const Icon(Icons.add,
+                  color: Color(0xFF0D1B3E), size: 28),
+            ),
           ),
         );
       },
@@ -306,6 +362,9 @@ class _QuickBtn extends StatelessWidget {
   const _QuickBtn(
       {required this.icon, required this.label, required this.onTap});
 
+  static const Color _accent      = Color(0xFF7C9EFF);
+  static const Color _accentLight = Color(0xFFB8CDFF);
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -314,21 +373,36 @@ class _QuickBtn extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 22),
           decoration: BoxDecoration(
-            color: const Color(0xFF1B263B).withValues(alpha: 0.6),
+            // BG card — sama dengan ProfileScreen
+            color: AppColors.cardBg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.borderColor, width: 1),
+            border: Border.all(color: AppColors.borderColor),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: AppColors.primaryCyan, size: 30),
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [_accent, _accentLight],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds),
+                child: Icon(icon, color: Colors.white, size: 30),
+              ),
               const SizedBox(height: 10),
-              Text(
-                label,
-                style: const TextStyle(
-                    color: AppColors.primaryCyan,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold),
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [_accent, _accentLight],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ).createShader(bounds),
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
@@ -357,9 +431,10 @@ class _ProjectTeamItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 2),
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: AppColors.borderColor, width: 1),
+          bottom: BorderSide(
+              color: Colors.white.withOpacity(0.07), width: 1),
         ),
       ),
       child: Row(
@@ -378,8 +453,8 @@ class _ProjectTeamItem extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: const TextStyle(
-                    color: AppColors.textGrey, fontSize: 12),
+                style: TextStyle(
+                    color: Colors.white.withOpacity(0.4), fontSize: 12),
               ),
             ],
           ),
@@ -388,9 +463,10 @@ class _ProjectTeamItem extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.15),
+                color: statusColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: statusColor, width: 1),
+                border: Border.all(
+                    color: statusColor.withOpacity(0.4), width: 1),
               ),
               child: Text(
                 status!,

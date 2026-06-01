@@ -76,13 +76,22 @@ class _JoinScreen2State extends State<JoinScreen2> {
   PreferredSizeWidget _buildAppBar() {
     if (_step == 0) {
       return AppBar(
-        backgroundColor: AppColors.primaryCyan,
+        backgroundColor: AppColors.darkBlueBg,
         elevation: 0,
         automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
         title: const Text(
           'Match Group',
           style: TextStyle(
-            color: Colors.black,
+            color: Color(0xFF0D1B3E),
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -91,13 +100,22 @@ class _JoinScreen2State extends State<JoinScreen2> {
       );
     } else if (_step == 1) {
       return AppBar(
-        backgroundColor: AppColors.primaryCyan,
+        backgroundColor: AppColors.darkBlueBg,
         elevation: 0,
         automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
         title: const Text(
           'Match Group',
           style: TextStyle(
-            color: Colors.black,
+            color: Color(0xFF0D1B3E),
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -219,10 +237,10 @@ class _TimeWindowStep extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Select up to 2 options to sync your deep work sessions.',
                   style: TextStyle(
-                    color: AppColors.textGrey,
+                    color: Colors.white.withOpacity(0.4),
                     fontSize: 14,
                     height: 1.5,
                   ),
@@ -242,16 +260,31 @@ class _TimeWindowStep extends StatelessWidget {
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.primaryCyan.withValues(alpha: 0.08)
-                              : AppColors.cardBg,
+                          gradient: isSelected
+                              ? const LinearGradient(
+                                  colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                )
+                              : null,
+                          color: isSelected ? null : AppColors.cardBg,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isSelected
-                                ? AppColors.primaryCyan
+                                ? Colors.transparent
                                 : AppColors.borderColor,
-                            width: isSelected ? 1.8 : 1,
+                            width: isSelected ? 0 : 1,
                           ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: const Color(0xFF3B5FD9)
+                                        .withOpacity(0.35),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ]
+                              : null,
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -259,8 +292,8 @@ class _TimeWindowStep extends StatelessWidget {
                             Icon(
                               _icons[opt],
                               color: isSelected
-                                  ? AppColors.primaryCyan
-                                  : AppColors.textGrey,
+                                  ? const Color(0xFF0D1B3E)
+                                  : Colors.white.withOpacity(0.4),
                               size: 32,
                             ),
                             const SizedBox(height: 12),
@@ -268,7 +301,7 @@ class _TimeWindowStep extends StatelessWidget {
                               _labels[opt] ?? opt,
                               style: TextStyle(
                                 color: isSelected
-                                    ? AppColors.primaryCyan
+                                    ? const Color(0xFF0D1B3E)
                                     : Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -279,9 +312,8 @@ class _TimeWindowStep extends StatelessWidget {
                               _subtitles[opt] ?? '',
                               style: TextStyle(
                                 color: isSelected
-                                    ? AppColors.primaryCyan
-                                        .withValues(alpha: 0.7)
-                                    : AppColors.textGrey,
+                                    ? const Color(0xFF0D1B3E).withOpacity(0.65)
+                                    : Colors.white.withOpacity(0.3),
                                 fontSize: 12,
                               ),
                             ),
@@ -299,17 +331,17 @@ class _TimeWindowStep extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.borderColor),
                   ),
-                  child: const Row(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline,
-                          color: AppColors.primaryCyan, size: 18),
-                      SizedBox(width: 10),
+                      const Icon(Icons.info_outline,
+                          color: Color(0xFF7C9EFF), size: 18),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           'Matching logic will prioritize users with overlapping windows for better real-time collaboration.',
                           style: TextStyle(
-                            color: AppColors.textGrey,
+                            color: Colors.white.withOpacity(0.4),
                             fontSize: 12,
                             height: 1.5,
                           ),
@@ -329,10 +361,7 @@ class _TimeWindowStep extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.darkBlueBg,
             border: Border(
-              top: BorderSide(
-                color: AppColors.borderColor,
-                width: 1,
-              ),
+              top: BorderSide(color: AppColors.borderColor, width: 1),
             ),
           ),
           child: Row(
@@ -340,11 +369,12 @@ class _TimeWindowStep extends StatelessWidget {
             children: [
               TextButton.icon(
                 onPressed: onBack,
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    size: 14, color: AppColors.textGrey),
-                label: const Text(
+                icon: Icon(Icons.arrow_back_ios_new_rounded,
+                    size: 14, color: Colors.white.withOpacity(0.4)),
+                label: Text(
                   'Back',
-                  style: TextStyle(color: AppColors.textGrey, fontSize: 14),
+                  style: TextStyle(
+                      color: Colors.white.withOpacity(0.4), fontSize: 14),
                 ),
               ),
               SizedBox(
@@ -352,27 +382,42 @@ class _TimeWindowStep extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryCyan,
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24)),
                     elevation: 0,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 28, vertical: 0),
+                    padding: EdgeInsets.zero,
                   ),
-                  child: const Row(
-                    children: [
-                      Text(
-                        'Next',
-                        style: TextStyle(
-                          color: Color(0xFF003642),
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
                       ),
-                      SizedBox(width: 6),
-                      Icon(Icons.arrow_forward_ios_rounded,
-                          size: 14, color: Color(0xFF003642)),
-                    ],
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 28, vertical: 13),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Next',
+                            style: TextStyle(
+                              color: Color(0xFF0D1B3E),
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 6),
+                          Icon(Icons.arrow_forward_ios_rounded,
+                              size: 14, color: Color(0xFF0D1B3E)),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -434,10 +479,10 @@ class _RoleStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'You must choose one main role and a backup role.',
                   style: TextStyle(
-                    color: AppColors.textGrey,
+                    color: Colors.white.withOpacity(0.4),
                     fontSize: 14,
                     height: 1.5,
                   ),
@@ -457,9 +502,9 @@ class _RoleStep extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
                         color: isPrimary
-                            ? AppColors.primaryCyan
+                            ? const Color(0xFF7C9EFF)
                             : isBackup
-                                ? AppColors.mintGreen
+                                ? const Color(0xFF4ADE80)
                                 : AppColors.borderColor,
                         width: (isPrimary || isBackup) ? 1.5 : 1,
                       ),
@@ -477,22 +522,19 @@ class _RoleStep extends StatelessWidget {
                                 height: 44,
                                 decoration: BoxDecoration(
                                   color: isPrimary
-                                      ? AppColors.primaryCyan
-                                          .withValues(alpha: 0.15)
+                                      ? const Color(0xFF7C9EFF).withOpacity(0.15)
                                       : isBackup
-                                          ? AppColors.mintGreen
-                                              .withValues(alpha: 0.15)
-                                          : AppColors.borderColor
-                                              .withValues(alpha: 0.3),
+                                          ? const Color(0xFF4ADE80).withOpacity(0.15)
+                                          : AppColors.borderColor.withOpacity(0.3),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Icon(
                                   icon,
                                   color: isPrimary
-                                      ? AppColors.primaryCyan
+                                      ? const Color(0xFF7C9EFF)
                                       : isBackup
-                                          ? AppColors.mintGreen
-                                          : AppColors.textGrey,
+                                          ? const Color(0xFF4ADE80)
+                                          : Colors.white.withOpacity(0.4),
                                   size: 22,
                                 ),
                               ),
@@ -505,9 +547,9 @@ class _RoleStep extends StatelessWidget {
                                       role,
                                       style: TextStyle(
                                         color: isPrimary
-                                            ? AppColors.primaryCyan
+                                            ? const Color(0xFF7C9EFF)
                                             : isBackup
-                                                ? AppColors.mintGreen
+                                                ? const Color(0xFF4ADE80)
                                                 : Colors.white,
                                         fontSize: 15,
                                         fontWeight: FontWeight.w700,
@@ -517,8 +559,8 @@ class _RoleStep extends StatelessWidget {
                                       const SizedBox(height: 3),
                                       Text(
                                         subtitle,
-                                        style: const TextStyle(
-                                          color: AppColors.textGrey,
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.4),
                                           fontSize: 12,
                                         ),
                                       ),
@@ -538,35 +580,40 @@ class _RoleStep extends StatelessWidget {
                                   onTap: () => onPrimaryChanged(
                                       isPrimary ? null : role),
                                   child: AnimatedContainer(
-                                    duration:
-                                        const Duration(milliseconds: 180),
+                                    duration: const Duration(milliseconds: 180),
                                     height: 38,
                                     decoration: BoxDecoration(
-                                      color: isPrimary
-                                          ? AppColors.primaryCyan
-                                          : Colors.black,
+                                      gradient: isPrimary
+                                          ? const LinearGradient(
+                                              colors: [
+                                                Color(0xFFB8CDFF),
+                                                Color(0xFF3B5FD9),
+                                              ],
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                            )
+                                          : null,
+                                      color: isPrimary ? null : AppColors.darkBlueBg,
                                       borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(8),
                                         bottomLeft: Radius.circular(8),
                                       ),
                                       border: Border.all(
                                         color: isPrimary
-                                            ? AppColors.primaryCyan
+                                            ? Colors.transparent
                                             : AppColors.borderColor,
                                         width: 1,
                                       ),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         if (isPrimary)
                                           const Padding(
-                                            padding:
-                                                EdgeInsets.only(right: 5),
+                                            padding: EdgeInsets.only(right: 5),
                                             child: Icon(
                                               Icons.check_circle,
-                                              color: Color(0xFF003642),
+                                              color: Color(0xFF0D1B3E),
                                               size: 14,
                                             ),
                                           ),
@@ -574,8 +621,8 @@ class _RoleStep extends StatelessWidget {
                                           'Primary',
                                           style: TextStyle(
                                             color: isPrimary
-                                                ? const Color(0xFF003642)
-                                                : AppColors.textGrey,
+                                                ? const Color(0xFF0D1B3E)
+                                                : Colors.white.withOpacity(0.4),
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -593,35 +640,32 @@ class _RoleStep extends StatelessWidget {
                                     onBackupChanged(isBackup ? null : role);
                                   },
                                   child: AnimatedContainer(
-                                    duration:
-                                        const Duration(milliseconds: 180),
+                                    duration: const Duration(milliseconds: 180),
                                     height: 38,
                                     decoration: BoxDecoration(
                                       color: isBackup
-                                          ? AppColors.mintGreen
-                                          : Colors.black,
+                                          ? const Color(0xFF4ADE80)
+                                          : AppColors.darkBlueBg,
                                       borderRadius: const BorderRadius.only(
                                         topRight: Radius.circular(8),
                                         bottomRight: Radius.circular(8),
                                       ),
                                       border: Border.all(
                                         color: isBackup
-                                            ? AppColors.mintGreen
+                                            ? const Color(0xFF4ADE80)
                                             : AppColors.borderColor,
                                         width: 1,
                                       ),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         if (isBackup)
                                           const Padding(
-                                            padding:
-                                                EdgeInsets.only(right: 5),
+                                            padding: EdgeInsets.only(right: 5),
                                             child: Icon(
                                               Icons.check_circle,
-                                              color: Color(0xFF003642),
+                                              color: Color(0xFF0D1B3E),
                                               size: 14,
                                             ),
                                           ),
@@ -629,8 +673,8 @@ class _RoleStep extends StatelessWidget {
                                           'Backup',
                                           style: TextStyle(
                                             color: isBackup
-                                                ? const Color(0xFF003642)
-                                                : AppColors.textGrey,
+                                                ? const Color(0xFF0D1B3E)
+                                                : Colors.white.withOpacity(0.4),
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -658,10 +702,7 @@ class _RoleStep extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.darkBlueBg,
             border: Border(
-              top: BorderSide(
-                color: AppColors.borderColor,
-                width: 1,
-              ),
+              top: BorderSide(color: AppColors.borderColor, width: 1),
             ),
           ),
           child: Row(
@@ -669,11 +710,12 @@ class _RoleStep extends StatelessWidget {
             children: [
               TextButton.icon(
                 onPressed: () {},
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    size: 14, color: AppColors.textGrey),
-                label: const Text(
+                icon: Icon(Icons.arrow_back_ios_new_rounded,
+                    size: 14, color: Colors.white.withOpacity(0.4)),
+                label: Text(
                   'Back',
-                  style: TextStyle(color: AppColors.textGrey, fontSize: 14),
+                  style: TextStyle(
+                      color: Colors.white.withOpacity(0.4), fontSize: 14),
                 ),
               ),
               SizedBox(
@@ -684,36 +726,56 @@ class _RoleStep extends StatelessWidget {
                     return ElevatedButton(
                       onPressed: isLoading ? null : onNext,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryCyan,
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24)),
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 28, vertical: 0),
+                        padding: EdgeInsets.zero,
                       ),
-                      child: isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Color(0xFF003642)),
-                            )
-                          : const Row(
-                              children: [
-                                Text(
-                                  'Next',
-                                  style: TextStyle(
-                                    color: Color(0xFF003642),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          gradient: isLoading
+                              ? null
+                              : const LinearGradient(
+                                  colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
                                 ),
-                                SizedBox(width: 6),
-                                Icon(Icons.arrow_forward_ios_rounded,
-                                    size: 14, color: Color(0xFF003642)),
-                              ],
-                            ),
+                          color: isLoading
+                              ? const Color(0xFF3B5FD9).withOpacity(0.3)
+                              : null,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 28, vertical: 13),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Color(0xFF0D1B3E)),
+                                )
+                              : const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Next',
+                                      style: TextStyle(
+                                        color: Color(0xFF0D1B3E),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(width: 6),
+                                    Icon(Icons.arrow_forward_ios_rounded,
+                                        size: 14, color: Color(0xFF0D1B3E)),
+                                  ],
+                                ),
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -774,17 +836,17 @@ class _SuccessStepState extends State<_SuccessStep>
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.black,
+                    color: AppColors.cardBg,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.mintGreen.withValues(alpha: 0.5),
+                        color: const Color(0xFF4ADE80).withOpacity(0.5),
                         blurRadius: 40,
                         spreadRadius: 10,
                       ),
                     ],
                   ),
                   child: const Icon(Icons.check_rounded,
-                      color: AppColors.mintGreen, size: 50),
+                      color: Color(0xFF4ADE80), size: 50),
                 ),
               ),
             ),
@@ -800,8 +862,10 @@ class _SuccessStepState extends State<_SuccessStep>
             Text(
               'You have successfully joined ${widget.roomName}.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: AppColors.textGrey, fontSize: 15, height: 1.5),
+              style: TextStyle(
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 15,
+                  height: 1.5),
             ),
             const SizedBox(height: 48),
             SizedBox(
@@ -810,17 +874,32 @@ class _SuccessStepState extends State<_SuccessStep>
               child: ElevatedButton(
                 onPressed: widget.onDone,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.mintGreen,
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
+                  padding: EdgeInsets.zero,
                 ),
-                child: const Text(
-                  'Go to My Rooms',
-                  style: TextStyle(
-                    color: Color(0xFF003642),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'Go to My Rooms',
+                      style: TextStyle(
+                        color: Color(0xFF0D1B3E),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ),

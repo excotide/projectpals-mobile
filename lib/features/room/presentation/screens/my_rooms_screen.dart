@@ -24,14 +24,15 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
   int _selectedTab = 0; // 0=All, 1=Open, 2=Ongoing
 
   // ── Color palette ──
-  static const Color _bg         = Color(0xFF0D1117);
-  static const Color _cardBg     = Color(0xFF141D2E);
-  static const Color _accent     = Color(0xFF7C9EFF);
-  static const Color _accentLight= Color(0xFFB8CDFF);
-  static const Color _accentBlue = Color(0xFF4B6EF5);
-  static const Color _accentDark = Color(0xFF3B5FD9);
-  static const Color _surface    = Color(0xFF1A2035);
-  static const Color _navyBg     = Color(0xFF1E2640);
+  // BG halaman — sama dengan ProfileScreen
+  static Color get _bgColor => AppColors.darkBlueBg;
+
+  static const Color _accent      = Color(0xFF7C9EFF);
+  static const Color _accentLight = Color(0xFFB8CDFF);
+  static const Color _accentBlue  = Color(0xFF4B6EF5);
+  static const Color _accentDark  = Color(0xFF3B5FD9);
+  static const Color _surface     = Color(0xFF1A2035);
+  static const Color _navyBg      = Color(0xFF1E2640);
 
   @override
   void initState() {
@@ -103,7 +104,8 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: _bg,
+        // ── BG sama dengan ProfileScreen ──
+        backgroundColor: _bgColor,
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +219,8 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
                     width: 1.5,
                   ),
                 ),
-                child: const Icon(Icons.person, color: Colors.white, size: 19),
+                child:
+                    const Icon(Icons.person, color: Colors.white, size: 19),
               ),
             ],
           ),
@@ -226,7 +229,7 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
     );
   }
 
-  // ── Filter tabs — Expanded rata kiri-kanan ─────────────────────────────────
+  // ── Filter tabs ────────────────────────────────────────────────────────────
 
   Widget _buildFilterTabs() {
     return Padding(
@@ -391,7 +394,7 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
   }
 }
 
-// ── Tab Chip — full width ──────────────────────────────────────────────────────
+// ── Tab Chip ───────────────────────────────────────────────────────────────────
 
 class _TabChip extends StatelessWidget {
   final String label;
@@ -450,7 +453,8 @@ class _TabChip extends StatelessWidget {
                     ? const Color(0xFF0D1B3E)
                     : Colors.white.withOpacity(0.6),
                 fontSize: 12,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                fontWeight:
+                    selected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
             const SizedBox(width: 5),
@@ -526,7 +530,6 @@ class _MyRoomCard extends StatelessWidget {
         _ => Colors.white.withOpacity(0.1),
       };
 
-  // Gradient border warna sesuai status
   List<Color> get _cardBorderColors => switch (room.status) {
         'open' => [
             const Color(0xFF4ADE80).withOpacity(0.4),
@@ -546,7 +549,8 @@ class _MyRoomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF141D2E),
+        // ── BG card sama dengan ProfileScreen ──
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: _cardBorderColors[0]),
       ),
@@ -558,10 +562,9 @@ class _MyRoomCard extends StatelessWidget {
             // ── Row 1: Status badge + room code ──
             Row(
               children: [
-                // Status badge
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: _statusBg,
                     borderRadius: BorderRadius.circular(6),
@@ -592,7 +595,6 @@ class _MyRoomCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                // Room code
                 Text(
                   room.roomCode,
                   style: TextStyle(
@@ -641,7 +643,7 @@ class _MyRoomCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // ── Stats row: max members + teams ──
+            // ── Stats row ──
             Row(
               children: [
                 Icon(Icons.people_outline_rounded,
@@ -679,8 +681,7 @@ class _MyRoomCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 9, vertical: 4),
                         decoration: BoxDecoration(
-                          color:
-                              const Color(0xFF7C9EFF).withOpacity(0.08),
+                          color: const Color(0xFF7C9EFF).withOpacity(0.08),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
                               color: const Color(0xFF7C9EFF)
@@ -718,10 +719,10 @@ class _MyRoomCard extends StatelessWidget {
               ),
             const SizedBox(height: 14),
 
-            // ── Bottom row: Copy Code kiri | Open Room kanan ──
+            // ── Bottom row: Copy Code | Open Room ──
             Row(
               children: [
-                // Copy Code — kiri, full flex
+                // Copy Code
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
@@ -738,10 +739,10 @@ class _MyRoomCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 11),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1A2035),
+                        // ── BG card sama dengan ProfileScreen ──
+                        color: AppColors.cardBg,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: Colors.white.withOpacity(0.1)),
+                        border: Border.all(color: AppColors.borderColor),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -764,7 +765,7 @@ class _MyRoomCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                // Open Room — kanan, full flex
+                // Open Room
                 Expanded(
                   child: GestureDetector(
                     onTap: onOpenRoom,
@@ -779,8 +780,7 @@ class _MyRoomCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color:
-                                const Color(0xFF3B5FD9).withOpacity(0.35),
+                            color: const Color(0xFF3B5FD9).withOpacity(0.35),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           ),

@@ -24,9 +24,11 @@ class _RoomScreenState extends State<RoomScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
 
-  static const Color _bgColor = Color(0xFF0D1117);
-  static const Color _cardColor = Color(0xFF161C2C);
-  static const Color _accentBlue = Color(0xFF7C9EFF);
+  // ── hanya 2 warna ini yang diubah, pakai AppColors dari ProfileScreen ──
+  static Color get _bgColor   => AppColors.darkBlueBg; // sama persis dengan ProfileScreen
+  static Color get _cardColor => AppColors.cardBg;     // sama persis dengan ProfileScreen
+
+  static const Color _accentBlue    = Color(0xFF7C9EFF);
   static const Color _accentBlueDark = Color(0xFF4B6EF5);
 
   @override
@@ -529,9 +531,9 @@ class _RoomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF141D2E),
+        color: AppColors.cardBg,           // ← pakai AppColors.cardBg dari ProfileScreen
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: AppColors.borderColor), // ← pakai AppColors.borderColor
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -711,7 +713,7 @@ class _AvatarStack extends StatelessWidget {
                   const Color(0xFF8B5CF6),
                 ][i % 3],
                 border: Border.all(
-                    color: const Color(0xFF141D2E), width: 2),
+                    color: AppColors.cardBg, width: 2), // ← border avatar pakai cardBg
               ),
               child: const Icon(Icons.person,
                   color: Colors.white, size: 14),
