@@ -39,6 +39,7 @@ import 'features/splash/splash_screen.dart';
 import 'features/room/presentation/screens/create_screen.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/auth/presentation/screens/register_screen.dart';
+import 'features/profile/edit_profile_screen.dart';
 import 'shared/widgets/main_scaffold.dart';
 import 'onboarding.dart';
 
@@ -91,6 +92,7 @@ class ProjectPalsApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'sans-serif',
         ),
+        // ✅ Kembali normal: mulai dari SplashScreen
         initialRoute: '/',
         routes: {
           '/': (_) => const SplashScreen(),
@@ -102,6 +104,7 @@ class ProjectPalsApp extends StatelessWidget {
           '/rooms': (_) => const MainScaffold(initialIndex: 2),
           '/profile': (_) => const MainScaffold(initialIndex: 3),
           '/create': (_) => const CreateRoomScreen(),
+          '/edit-profile': (_) => const EditProfileScreen(),
         },
       ),
     );

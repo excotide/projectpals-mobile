@@ -32,57 +32,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
+                  // ── Header ──
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
+                          // Avatar circle dengan warna seperti design
                           Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
-                              color: Colors.white10,
+                            width: 46,
+                            height: 46,
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFF6B6B), Color(0xFFFF8E53)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
                             ),
                             child: const Icon(Icons.person,
-                                color: Colors.white, size: 30),
+                                color: Colors.white, size: 26),
                           ),
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Welcome Back,',
-                                  style: TextStyle(
-                                      color: AppColors.textGrey,
-                                      fontSize: 13)),
-                              Text(displayName,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
+                              const Text(
+                                'Welcome Back,',
+                                style: TextStyle(
+                                    color: AppColors.textGrey, fontSize: 12),
+                              ),
+                              Text(
+                                displayName,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ],
                           ),
                         ],
                       ),
+                      // Notification bell
                       GestureDetector(
                         onTap: () => showNotificationDialog(context),
                         child: Stack(
                           children: [
-                            const Icon(Icons.notifications,
-                                color: Colors.white, size: 28),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white10,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.notifications_outlined,
+                                  color: Colors.white, size: 22),
+                            ),
                             Positioned(
-                              right: 0,
-                              top: 0,
+                              right: 4,
+                              top: 4,
                               child: Container(
-                                padding: const EdgeInsets.all(4),
+                                width: 10,
+                                height: 10,
                                 decoration: const BoxDecoration(
                                     color: Colors.orange,
                                     shape: BoxShape.circle),
-                                child: const Text('1',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 8,
-                                        fontWeight: FontWeight.bold)),
                               ),
                             ),
                           ],
@@ -90,53 +103,91 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 24),
 
-                  // Active Projects Card
+                  // ── Active Projects Card ──
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       color: AppColors.primaryCyan,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Active Projects',
-                                style: TextStyle(
-                                    color: Color(0xFF003642),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold)),
-                            Icon(Icons.arrow_forward_ios,
-                                size: 12, color: Color(0xFF003642)),
+                            const Text(
+                              'Active Projects',
+                              style: TextStyle(
+                                  color: Color(0xFF003642),
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            GestureDetector(
+                              onTap: () =>
+                                  MainScaffold.of(context)?.switchTab(2),
+                              child: const Row(
+                                children: [
+                                  Text(
+                                    'More Details',
+                                    style: TextStyle(
+                                        color: Color(0xFF003642),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Icon(Icons.arrow_forward_ios,
+                                      size: 11, color: Color(0xFF003642)),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 14),
                         GestureDetector(
-                          onTap: () => MainScaffold.of(context)?.switchTab(2),
+                          onTap: () =>
+                              MainScaffold.of(context)?.switchTab(2),
                           child: Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 12),
                             decoration: BoxDecoration(
                               color: const Color(0xFF002B35)
-                                  .withValues(alpha: 0.9),
-                              borderRadius: BorderRadius.circular(15),
+                                  .withValues(alpha: 0.85),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment:
                                   MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('My Rooms',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600)),
-                                Text('View All →',
+                                const Text(
+                                  'My Rooms',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.mintGreen
+                                        .withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                        color: AppColors.mintGreen,
+                                        width: 1),
+                                  ),
+                                  child: const Text(
+                                    'Day 3 · On Going',
                                     style: TextStyle(
                                         color: AppColors.mintGreen,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold)),
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -144,15 +195,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 28),
 
-                  // Quick Access
-                  const Text('Quick Access',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 15),
+                  // ── Quick Access ──
+                  const Text(
+                    'Quick Access',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 14),
                   Row(
                     children: [
                       _QuickBtn(
@@ -161,7 +214,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         onTap: () => Navigator.push(context,
                             buildSlideRoute(const CreateRoomScreen())),
                       ),
-                      const SizedBox(width: 15),
+                      const SizedBox(width: 14),
                       _QuickBtn(
                         icon: Icons.groups,
                         label: 'Join Room',
@@ -170,63 +223,64 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 28),
 
-                  // Profile quick info
-                  if (state is AuthAuthenticated) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Your Account',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
-                        GestureDetector(
-                          onTap: () => MainScaffold.of(context)?.switchTab(3),
-                          child: const Text('Profile →',
+                  // ── Your Projects Team ──
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Your Projects Team',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      GestureDetector(
+                        onTap: () =>
+                            MainScaffold.of(context)?.switchTab(2),
+                        child: const Row(
+                          children: [
+                            Text(
+                              'More Details',
                               style: TextStyle(
-                                  color: AppColors.textGrey, fontSize: 12)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0D1B2A),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(
-                              color: Colors.white10,
-                              shape: BoxShape.circle,
+                                  color: AppColors.textGrey, fontSize: 12),
                             ),
-                            child: const Icon(Icons.person,
-                                color: AppColors.primaryCyan, size: 24),
-                          ),
-                          const SizedBox(width: 14),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(state.user.name,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              Text(state.user.username,
-                                  style: const TextStyle(
-                                      color: AppColors.textGrey,
-                                      fontSize: 12)),
-                            ],
-                          ),
-                        ],
+                            SizedBox(width: 4),
+                            Icon(Icons.arrow_forward_ios,
+                                size: 11, color: AppColors.textGrey),
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Project item cards (dari state jika ada, atau placeholder)
+                  if (state is AuthAuthenticated) ...[
+                    _ProjectTeamItem(
+                      name: state.user.name,
+                      subtitle: 'Frontend · 3 months',
+                      status: 'COMPLETED',
+                      statusColor: AppColors.mintGreen,
+                    ),
+                    const SizedBox(height: 10),
+                    _ProjectTeamItem(
+                      name: state.user.username,
+                      subtitle: 'FullStack · 1 year',
+                      status: 'COMPLETED',
+                      statusColor: AppColors.mintGreen,
+                    ),
+                  ] else ...[
+                    _ProjectTeamItem(
+                      name: 'No projects yet',
+                      subtitle: 'Join or create a room to start',
+                      status: null,
+                      statusColor: Colors.transparent,
                     ),
                   ],
+
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -244,6 +298,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
+// ── Quick Access Button ────────────────────────────────────────────────────────
 class _QuickBtn extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -257,23 +312,96 @@ class _QuickBtn extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(vertical: 22),
           decoration: BoxDecoration(
-            color: const Color(0xFF1B263B).withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(15),
+            color: const Color(0xFF1B263B).withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderColor, width: 1),
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: AppColors.primaryCyan, size: 28),
+              Icon(icon, color: AppColors.primaryCyan, size: 30),
               const SizedBox(height: 10),
-              Text(label,
-                  style: const TextStyle(
-                      color: AppColors.primaryCyan,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold)),
+              Text(
+                label,
+                style: const TextStyle(
+                    color: AppColors.primaryCyan,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ── Project Team Item ──────────────────────────────────────────────────────────
+class _ProjectTeamItem extends StatelessWidget {
+  final String name;
+  final String subtitle;
+  final String? status;
+  final Color statusColor;
+
+  const _ProjectTeamItem({
+    required this.name,
+    required this.subtitle,
+    required this.status,
+    required this.statusColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppColors.borderColor, width: 1),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                    color: AppColors.textGrey, fontSize: 12),
+              ),
+            ],
+          ),
+          if (status != null)
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: statusColor, width: 1),
+              ),
+              child: Text(
+                status!,
+                style: TextStyle(
+                    color: statusColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5),
+              ),
+            ),
+        ],
       ),
     );
   }
