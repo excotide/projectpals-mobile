@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'features/dashboard/dashboard_screen.dart'; //menambahkan ini sementara
 
 // Core
 import 'core/network/api_client.dart';
@@ -93,16 +92,12 @@ class ProjectPalsApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'sans-serif',
         ),
-        initialRoute: '/dashboard', // <--- Cukup Tulis yang Ini Saja!
+        // ✅ Kembali normal: mulai dari SplashScreen
+        initialRoute: '/',
         routes: {
-          // ==== BARIS YANG DITAMBAHKAN/DIUBAH UNTUK BYPASS ====
-          '/': (_) =>
-              const MainScaffold(initialIndex: 0), // Langsung ke Dashboard
-          '/login': (_) =>
-              const MainScaffold(initialIndex: 0), // Langsung ke Dashboard
-          // '/': (_) => const SplashScreen(),
+          '/': (_) => const SplashScreen(),
           '/onboarding': (_) => const OnboardingScreen(),
-          // '/login': (_) => const LoginScreen(),
+          '/login': (_) => const LoginScreen(),
           '/register': (_) => const RegisterScreen(),
           '/dashboard': (_) => const MainScaffold(initialIndex: 0),
           '/join': (_) => const MainScaffold(initialIndex: 1),
