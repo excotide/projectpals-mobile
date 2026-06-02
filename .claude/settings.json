@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"GET /api/auth/me -> HTTP %{http_code}\\\\n\" https://api.excotide.app/api/auth/me -H \"Accept: application/json\")",
+      "Bash(curl -s -X POST https://api.excotide.app/api/auth/login -H \"Accept: application/json\" -H \"Content-Type: application/json\" -d '{}' -w \"\\\\nlogin\\(empty\\) -> HTTP %{http_code}\\\\n\")",
+      "Bash(flutter analyze *)"
+    ]
+  }
+}

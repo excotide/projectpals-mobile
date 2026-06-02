@@ -6,6 +6,8 @@ import '../../shared/widgets/app_bottom_nav.dart';
 import '../../shared/widgets/main_scaffold.dart';
 import './widgets/notification_dialog.dart';
 import '../room/presentation/screens/create_screen.dart';
+import '../room/domain/entities/room_entity.dart';
+import '../room/presentation/bloc/room_bloc.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -15,6 +17,12 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<RoomBloc>().add(RoomMyRoomsLoadRequested());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
@@ -256,29 +264,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 14),
 
-                  // Project item cards (dari state jika ada, atau placeholder)
-                  if (state is AuthAuthenticated) ...[
-                    _ProjectTeamItem(
-                      name: state.user.name,
-                      subtitle: 'Frontend · 3 months',
-                      status: 'COMPLETED',
-                      statusColor: AppColors.mintGreen,
-                    ),
-                    const SizedBox(height: 10),
-                    _ProjectTeamItem(
-                      name: state.user.username,
-                      subtitle: 'FullStack · 1 year',
-                      status: 'COMPLETED',
-                      statusColor: AppColors.mintGreen,
-                    ),
-                  ] else ...[
-                    _ProjectTeamItem(
-                      name: 'No projects yet',
-                      subtitle: 'Join or create a room to start',
-                      status: null,
-                      statusColor: Colors.transparent,
-                    ),
-                  ],
+                  // Project item cards — diambil dari my-rooms (RoomBloc)
+                  const _DashboardProjectsList(),
 
                   const SizedBox(height: 100),
                 ],
@@ -334,6 +321,74 @@ class _QuickBtn extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ── Projects list (from my-rooms) ───────────────────────────────────────────────
+class _DashboardProjectsList extends StatelessWidget {
+  const _DashboardProjectsList();
+
+  String _statusLabel(String status) => switch (status) {
+        'open' => 'OPEN',
+        'matching' => 'MATCHING',
+        'ongoing' || 'in_progress' || 'matched' => 'ON GOING',
+        'completed' => 'COMPLETED',
+        'closed' => 'CLOSED',
+        _ => status.toUpperCase(),
+      };
+
+  Color _statusColor(String status) => switch (status) {
+        'open' || 'ongoing' || 'in_progress' || 'matched' => AppColors.mintGreen,
+        'matching' => Colors.orange,
+        _ => AppColors.textGrey,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RoomBloc, RoomState>(
+      builder: (context, state) {
+        if (state is RoomLoading) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: AppColors.primaryCyan),
+              ),
+            ),
+          );
+        }
+
+        if (state is RoomMyRoomsLoaded && state.rooms.isNotEmpty) {
+          final rooms = state.rooms.take(3).toList();
+          return Column(
+            children: [
+              for (final RoomEntity room in rooms) ...[
+                _ProjectTeamItem(
+                  name: room.projectTheme,
+                  subtitle: room.roles.isNotEmpty
+                      ? room.roles.join(' · ')
+                      : room.roomCode,
+                  status: _statusLabel(room.status),
+                  statusColor: _statusColor(room.status),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ],
+          );
+        }
+
+        // Kosong / belum login / gagal
+        return const _ProjectTeamItem(
+          name: 'No projects yet',
+          subtitle: 'Join or create a room to start',
+          status: null,
+          statusColor: Colors.transparent,
+        );
+      },
     );
   }
 }

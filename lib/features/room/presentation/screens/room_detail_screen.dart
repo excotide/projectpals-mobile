@@ -42,7 +42,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
         backgroundColor: const Color(0xFF161C2C),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withOpacity(0.1))),
+            side: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
         title: const Text('Delete Room?',
             style:
                 TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -75,7 +75,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
         backgroundColor: const Color(0xFF161C2C),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withOpacity(0.1))),
+            side: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
         title: const Text('Leave Room?',
             style:
                 TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -162,7 +162,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
             if (_isOwner)
               IconButton(
                 icon: Icon(Icons.more_vert,
-                    color: Colors.white.withOpacity(0.7)),
+                    color: Colors.white.withValues(alpha: 0.7)),
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
@@ -243,7 +243,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                   Text(
                     'TOTAL: ${_members.length}',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha: 0.4),
                       fontSize: 11,
                       letterSpacing: 0.5,
                     ),
@@ -274,7 +274,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
         padding: const EdgeInsets.all(24),
         child: Center(
           child: Text('No members yet',
-              style: TextStyle(color: Colors.white.withOpacity(0.3))),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.3))),
         ),
       );
     }
@@ -306,7 +306,7 @@ class _RoomInformationButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF141D2E),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF2D4799).withOpacity(0.5)),
+          border: Border.all(color: const Color(0xFF2D4799).withValues(alpha: 0.5)),
           gradient: const LinearGradient(
             colors: [Color(0xFF141D2E), Color(0xFF131E35)],
             begin: Alignment.centerLeft,
@@ -319,10 +319,10 @@ class _RoomInformationButton extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF5B7FFF).withOpacity(0.15),
+                color: const Color(0xFF5B7FFF).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                    color: const Color(0xFF5B7FFF).withOpacity(0.3)),
+                    color: const Color(0xFF5B7FFF).withValues(alpha: 0.3)),
               ),
               child: const Icon(Icons.info_outline_rounded,
                   color: Color(0xFF5B7FFF), size: 18),
@@ -352,7 +352,7 @@ class _RoomInformationButton extends StatelessWidget {
               ),
             ),
             Icon(Icons.arrow_forward_ios_rounded,
-                color: Colors.white.withOpacity(0.3), size: 14),
+                color: Colors.white.withValues(alpha: 0.3), size: 14),
           ],
         ),
       ),
@@ -385,7 +385,7 @@ class _TeamInfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141D2E),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -396,7 +396,7 @@ class _TeamInfoCard extends StatelessWidget {
               Text(
                 'TEAM INFORMATION',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.35),
+                  color: Colors.white.withValues(alpha: 0.35),
                   fontSize: 10,
                   letterSpacing: 1.5,
                   fontWeight: FontWeight.w600,
@@ -406,10 +406,10 @@ class _TeamInfoCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.mintGreen.withOpacity(0.12),
+                  color: AppColors.mintGreen.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(6),
                   border:
-                      Border.all(color: AppColors.mintGreen.withOpacity(0.3)),
+                      Border.all(color: AppColors.mintGreen.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   _statusLabel,
@@ -456,7 +456,7 @@ class _TeamInfoCard extends StatelessWidget {
           Text(
             'ROLES ACTIVE',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.35),
+              color: Colors.white.withValues(alpha: 0.35),
               fontSize: 10,
               letterSpacing: 1.2,
             ),
@@ -465,7 +465,7 @@ class _TeamInfoCard extends StatelessWidget {
           Text(
             room.roles.isNotEmpty ? room.roles.join(', ') : 'No roles defined',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 13,
             ),
           ),
@@ -496,7 +496,7 @@ class _InfoItem extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.35),
+            color: Colors.white.withValues(alpha: 0.35),
             fontSize: 10,
             letterSpacing: 1.2,
           ),
@@ -526,7 +526,7 @@ class _InfoItem extends StatelessWidget {
                   );
                 },
                 child: Icon(Icons.copy_rounded,
-                    color: Colors.white.withOpacity(0.3), size: 13),
+                    color: Colors.white.withValues(alpha: 0.3), size: 13),
               ),
             ],
           ],
@@ -553,7 +553,7 @@ class _TargetCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141D2E),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -585,7 +585,7 @@ class _TargetCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: filled / total,
               minHeight: 5,
-              backgroundColor: Colors.white.withOpacity(0.07),
+              backgroundColor: Colors.white.withValues(alpha: 0.07),
               valueColor:
                   const AlwaysStoppedAnimation<Color>(AppColors.mintGreen),
             ),
@@ -606,7 +606,7 @@ class _TargetCard extends StatelessWidget {
                     Text(
                       e.value.toUpperCase(),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 10,
                         letterSpacing: 1,
                         fontWeight: FontWeight.w600,
@@ -615,7 +615,7 @@ class _TargetCard extends StatelessWidget {
                     Text(
                       '$roleFilled/$roleCount',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 10,
                       ),
                     ),
@@ -630,13 +630,13 @@ class _TargetCard extends StatelessWidget {
                         horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: i < roleFilled
-                          ? AppColors.mintGreen.withOpacity(0.08)
-                          : Colors.white.withOpacity(0.03),
+                          ? AppColors.mintGreen.withValues(alpha: 0.08)
+                          : Colors.white.withValues(alpha: 0.03),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: i < roleFilled
-                            ? AppColors.mintGreen.withOpacity(0.2)
-                            : Colors.white.withOpacity(0.06),
+                            ? AppColors.mintGreen.withValues(alpha: 0.2)
+                            : Colors.white.withValues(alpha: 0.06),
                       ),
                     ),
                     child: Row(
@@ -647,7 +647,7 @@ class _TargetCard extends StatelessWidget {
                               : Icons.check_box_outline_blank_rounded,
                           color: i < roleFilled
                               ? AppColors.mintGreen
-                              : Colors.white.withOpacity(0.2),
+                              : Colors.white.withValues(alpha: 0.2),
                           size: 16,
                         ),
                         const SizedBox(width: 10),
@@ -655,15 +655,15 @@ class _TargetCard extends StatelessWidget {
                           '${e.value} ${i + 1}',
                           style: TextStyle(
                             color: i < roleFilled
-                                ? Colors.white.withOpacity(0.8)
-                                : Colors.white.withOpacity(0.3),
+                                ? Colors.white.withValues(alpha: 0.8)
+                                : Colors.white.withValues(alpha: 0.3),
                             fontSize: 13,
                           ),
                         ),
                         const Spacer(),
                         if (i >= roleFilled)
                           Icon(Icons.edit_outlined,
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               size: 14),
                       ],
                     ),
@@ -693,7 +693,7 @@ class _DetailMemberCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141D2E),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
       ),
       child: Row(
         children: [
@@ -738,10 +738,10 @@ class _DetailMemberCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.mintGreen.withOpacity(0.15),
+                          color: AppColors.mintGreen.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                              color: AppColors.mintGreen.withOpacity(0.3)),
+                              color: AppColors.mintGreen.withValues(alpha: 0.3)),
                         ),
                         child: const Text(
                           'BETA',
@@ -760,7 +760,7 @@ class _DetailMemberCard extends StatelessWidget {
                       ? '${member.primaryRole} Developer'
                       : 'Developer',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 12,
                   ),
                 ),
@@ -891,7 +891,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(2))),
               ),
               const SizedBox(height: 20),
@@ -924,13 +924,13 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                           horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         color: selected
-                            ? color.withOpacity(0.15)
+                            ? color.withValues(alpha: 0.15)
                             : const Color(0xFF141D2E),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                             color: selected
                                 ? color
-                                : Colors.white.withOpacity(0.1)),
+                                : Colors.white.withValues(alpha: 0.1)),
                       ),
                       child: Text(s.toUpperCase(),
                           style: TextStyle(
@@ -974,7 +974,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                       color: const Color(0xFF141D2E),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: Colors.white.withOpacity(0.07)),
+                          color: Colors.white.withValues(alpha: 0.07)),
                     ),
                     child: Row(
                       children: [
@@ -993,7 +993,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                           onTap: () =>
                               setState(() => _roles.removeAt(e.key)),
                           child: Icon(Icons.delete_outline,
-                              color: Colors.white.withOpacity(0.3),
+                              color: Colors.white.withValues(alpha: 0.3),
                               size: 18),
                         ),
                       ],
@@ -1022,7 +1022,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                     backgroundColor: const Color(0xFF5B7FFF),
                     foregroundColor: Colors.white,
                     disabledBackgroundColor:
-                        const Color(0xFF5B7FFF).withOpacity(0.3),
+                        const Color(0xFF5B7FFF).withValues(alpha: 0.3),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
@@ -1041,7 +1041,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
 
   Widget _sectionLabel(String label) => Text(label,
       style: TextStyle(
-          color: Colors.white.withOpacity(0.4),
+          color: Colors.white.withValues(alpha: 0.4),
           fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 1.5));
@@ -1052,7 +1052,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
       decoration: BoxDecoration(
         color: const Color(0xFF141D2E),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: TextField(
         controller: ctrl,
@@ -1061,7 +1061,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
         onChanged: (_) => setState(() {}),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.white.withOpacity(0.25)),
+          hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.25)),
           border: InputBorder.none,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -1077,7 +1077,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
       decoration: BoxDecoration(
         color: const Color(0xFF141D2E),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
       ),
       child: Row(
         children: [
@@ -1092,7 +1092,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                         fontWeight: FontWeight.w600)),
                 Text(sublabel,
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.35),
+                        color: Colors.white.withValues(alpha: 0.35),
                         fontSize: 11)),
               ],
             ),
@@ -1124,15 +1124,15 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
           shape: BoxShape.circle,
           border: Border.all(
             color: enabled
-                ? const Color(0xFF5B7FFF).withOpacity(0.6)
-                : Colors.white.withOpacity(0.1),
+                ? const Color(0xFF5B7FFF).withValues(alpha: 0.6)
+                : Colors.white.withValues(alpha: 0.1),
           ),
         ),
         child: Icon(icon,
             size: 16,
             color: enabled
                 ? const Color(0xFF5B7FFF)
-                : Colors.white.withOpacity(0.2)),
+                : Colors.white.withValues(alpha: 0.2)),
       ),
     );
   }

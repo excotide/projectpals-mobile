@@ -3,6 +3,26 @@ import '../../../../core/constants/api_constants.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../models/user_model.dart';
 
+/// Ambil pesan error yang berarti dari DioException.
+/// Membedakan error koneksi (mis. CORS di web / tidak ada internet) dari
+/// error yang dikirim server, dan aman terhadap body non-JSON.
+String _dioMessage(DioException e, String fallback) {
+  final data = e.response?.data;
+  if (data is Map && data['message'] is String) {
+    return data['message'] as String;
+  }
+  switch (e.type) {
+    case DioExceptionType.connectionError:
+    case DioExceptionType.connectionTimeout:
+    case DioExceptionType.sendTimeout:
+    case DioExceptionType.receiveTimeout:
+      return 'Tidak dapat terhubung ke server. Periksa koneksi internet '
+          '(atau CORS bila dijalankan di web).';
+    default:
+      return fallback;
+  }
+}
+
 abstract class AuthRemoteDataSource {
   Future<Map<String, dynamic>> login({
     required String email,
@@ -45,8 +65,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      final msg = e.response?.data?['message'] ?? 'Login failed';
-      throw ServerException(message: msg, statusCode: e.response?.statusCode);
+      throw ServerException(
+          message: _dioMessage(e, 'Login failed'),
+          statusCode: e.response?.statusCode);
     }
   }
 
@@ -73,8 +94,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      final msg = e.response?.data?['message'] ?? 'Registration failed';
-      throw ServerException(message: msg, statusCode: e.response?.statusCode);
+      throw ServerException(
+          message: _dioMessage(e, 'Registration failed'),
+          statusCode: e.response?.statusCode);
     }
   }
 
@@ -83,8 +105,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await dio.post(ApiConstants.logout);
     } on DioException catch (e) {
-      final msg = e.response?.data?['message'] ?? 'Logout failed';
-      throw ServerException(message: msg, statusCode: e.response?.statusCode);
+      throw ServerException(
+          message: _dioMessage(e, 'Logout failed'),
+          statusCode: e.response?.statusCode);
     }
   }
 
@@ -94,8 +117,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await dio.get(ApiConstants.me);
       return UserModel.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
-      final msg = e.response?.data?['message'] ?? 'Failed to get user';
-      throw ServerException(message: msg, statusCode: e.response?.statusCode);
+      throw ServerException(
+          message: _dioMessage(e, 'Failed to get user'),
+          statusCode: e.response?.statusCode);
     }
   }
 }

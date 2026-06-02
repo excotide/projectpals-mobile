@@ -1,12 +1,10 @@
 class ApiConstants {
-  // Flutter Web (browser) → pakai localhost:8000 (nginx Docker)
-  static const String baseUrl = 'http://localhost:8000';
+  // Production API (lihat API.md)
+  static const String baseUrl = 'https://api.excotide.app';
 
-  // Kalau test di Android emulator, ganti ke:
-  // static const String baseUrl = 'http://10.0.2.2:8000';
-
-  // Kalau test di iOS simulator, ganti ke:
-  // static const String baseUrl = 'http://localhost:8000';
+  // Untuk pengembangan lokal (nginx Docker), ganti ke salah satu:
+  // Web/iOS simulator : http://localhost:8000
+  // Android emulator  : http://10.0.2.2:8000
 
   // Auth endpoints
   static const String register = '/api/auth/register';

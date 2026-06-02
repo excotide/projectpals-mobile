@@ -63,10 +63,8 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
   static const Color _accent = Color(0xFF7C9EFF);
   static const Color _accentLight = Color(0xFFB8CDFF);
   static const Color _accentBlue = Color(0xFF4B6EF5);
-  static const Color _accentBlueDark = Color(0xFF4B6EF5);
   static const Color _green = Color(0xFF4ADE80);
   static const Color _yellow = Color(0xFFFBBF24);
-  static const Color _purple = Color(0xFF8B5CF6);
 
   // Team tab color palette — bergantian
   static const List<Color> _teamTabColors = [
@@ -181,11 +179,11 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
               decoration: BoxDecoration(
                 color: _navyBg,
                 borderRadius: BorderRadius.circular(9),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
               ),
               child: Icon(
                 Icons.arrow_back_ios_new_rounded,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 size: 15,
               ),
             ),
@@ -225,11 +223,11 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             decoration: BoxDecoration(
               color: _navyBg,
               borderRadius: BorderRadius.circular(9),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
             ),
             child: Icon(
               Icons.search_rounded,
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               size: 17,
             ),
           ),
@@ -246,7 +244,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                 end: Alignment.bottomRight,
               ),
               border: Border.all(
-                color: _accent.withOpacity(0.5),
+                color: _accent.withValues(alpha: 0.5),
                 width: 1.5,
               ),
             ),
@@ -304,13 +302,13 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: selected
-                              ? color.withOpacity(0.6)
-                              : Colors.white.withOpacity(0.08),
+                              ? color.withValues(alpha: 0.6)
+                              : Colors.white.withValues(alpha: 0.08),
                         ),
                         boxShadow: selected
                             ? [
                                 BoxShadow(
-                                  color: color.withOpacity(0.35),
+                                  color: color.withValues(alpha: 0.35),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
                                 )
@@ -323,7 +321,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                           style: TextStyle(
                             color: selected
                                 ? Colors.white
-                                : Colors.white.withOpacity(0.5),
+                                : Colors.white.withValues(alpha: 0.5),
                             fontSize: 12,
                             fontWeight: selected
                                 ? FontWeight.w700
@@ -355,7 +353,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
       decoration: BoxDecoration(
         color: _cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,7 +362,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
           Text(
             'ROOM: ${room.projectTheme.toUpperCase()}',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.35),
+              color: Colors.white.withValues(alpha: 0.35),
               fontSize: 9,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.1,
@@ -394,9 +392,9 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.12),
+                  color: statusColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: statusColor.withOpacity(0.3)),
+                  border: Border.all(color: statusColor.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -435,7 +433,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                     Text(
                       'ROOMCODE',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         fontSize: 8,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.0,
@@ -468,7 +466,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                           const SizedBox(width: 4),
                           Icon(
                             Icons.copy_rounded,
-                            color: const Color(0xFF7C9EFF).withOpacity(0.6),
+                            color: const Color(0xFF7C9EFF).withValues(alpha: 0.6),
                             size: 11,
                           ),
                         ],
@@ -484,7 +482,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                     Text(
                       'ENVIRONMENT',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         fontSize: 8,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.0,
@@ -512,7 +510,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
               Text(
                 'AVAILABILITY',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   fontSize: 8,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.0,
@@ -528,11 +526,11 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF7C9EFF).withOpacity(0.1),
+                        color: const Color(0xFF7C9EFF).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
                             color:
-                                const Color(0xFF7C9EFF).withOpacity(0.2)),
+                                const Color(0xFF7C9EFF).withValues(alpha: 0.2)),
                       ),
                       child: Text(
                         role.length > 4
@@ -578,7 +576,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             Text(
               '$memberCount/$maxPerGroup Selesai',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.35),
+                color: Colors.white.withValues(alpha: 0.35),
                 fontSize: 11,
               ),
             ),
@@ -606,7 +604,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
       decoration: BoxDecoration(
         color: _cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -634,7 +632,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
               Text(
                 '$filled/0',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.35),
+                  color: Colors.white.withValues(alpha: 0.35),
                   fontSize: 11,
                 ),
               ),
@@ -644,7 +642,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
           Text(
             'Belum ada target untuk role ini',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.25),
+              color: Colors.white.withValues(alpha: 0.25),
               fontSize: 10,
             ),
           ),
@@ -675,7 +673,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             Text(
               'Total: ${members.length}',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.35),
+                color: Colors.white.withValues(alpha: 0.35),
                 fontSize: 11,
               ),
             ),
@@ -688,13 +686,13 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             decoration: BoxDecoration(
               color: _cardBg,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.06)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
             ),
             child: Center(
               child: Text(
                 'Belum ada anggota di tim ini',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   fontSize: 12,
                 ),
               ),
@@ -723,7 +721,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
       decoration: BoxDecoration(
         color: _cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Row(
         children: [
@@ -772,10 +770,10 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: _green.withOpacity(0.12),
+                          color: _green.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4),
                           border:
-                              Border.all(color: _green.withOpacity(0.3)),
+                              Border.all(color: _green.withValues(alpha: 0.3)),
                         ),
                         child: const Text(
                           'Ketua',
@@ -793,7 +791,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                 Text(
                   member.role,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 11,
                   ),
                 ),
@@ -808,11 +806,11 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
               color: _surface,
               borderRadius: BorderRadius.circular(7),
               border:
-                  Border.all(color: Colors.white.withOpacity(0.08)),
+                  Border.all(color: Colors.white.withValues(alpha: 0.08)),
             ),
             child: Icon(
               Icons.more_vert_rounded,
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               size: 16,
             ),
           ),
@@ -836,7 +834,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF5B7FFF).withOpacity(0.35),
+            color: const Color(0xFF5B7FFF).withValues(alpha: 0.35),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

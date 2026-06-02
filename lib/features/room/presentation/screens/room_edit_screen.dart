@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
 
@@ -26,7 +25,6 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
   static const Color _accentDark  = Color(0xFF4B6EF5);
   static const Color _green       = Color(0xFF4ADE80);
   static const Color _border      = Color(0x14FFFFFF);
-  static const Color _navyDark    = Color(0xFF0D1B3E);
 
   late RoomEntity _room;
   String? _selectedRole;
@@ -40,17 +38,6 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
     'On-site' : Icons.location_city_outlined,
     'Flexible': Icons.tune_rounded,
   };
-
-  String get _currentUserName {
-    final s = context.read<AuthBloc>().state;
-    return s is AuthAuthenticated ? s.user.name : 'You';
-  }
-
-  String get _currentUserInitials {
-    final name = _currentUserName.trim().split(' ');
-    if (name.length >= 2) return '${name[0][0]}${name[1][0]}'.toUpperCase();
-    return name[0].substring(0, name[0].length >= 2 ? 2 : 1).toUpperCase();
-  }
 
   @override
   void initState() {
@@ -82,7 +69,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
         backgroundColor: const Color(0xFF161C2C),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         title: const Text(
           'Keluar dari Room?',
@@ -210,7 +197,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
               border: Border.all(color: _border),
             ),
             child: Icon(Icons.more_vert,
-                color: Colors.white.withOpacity(0.5), size: 18),
+                color: Colors.white.withValues(alpha: 0.5), size: 18),
           ),
           const SizedBox(width: 8),
         ],
@@ -235,9 +222,9 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: _accent.withOpacity(0.12),
+                    color: _accent.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
-                    border: Border.all(color: _accent.withOpacity(0.3)),
+                    border: Border.all(color: _accent.withValues(alpha: 0.3)),
                   ),
                   child: const Icon(Icons.info_outline_rounded,
                       color: _accent, size: 14),
@@ -263,7 +250,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Divider(color: Colors.white.withOpacity(0.06), height: 1),
+            child: Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
           ),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -321,10 +308,10 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
       decoration: BoxDecoration(
         color: _cardBg2,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _accent.withOpacity(0.18)),
+        border: Border.all(color: _accent.withValues(alpha: 0.18)),
         boxShadow: [
           BoxShadow(
-            color: _accent.withOpacity(0.06),
+            color: _accent.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -339,9 +326,9 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: _accent.withOpacity(0.15),
+                  color: _accent.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
-                  border: Border.all(color: _accent.withOpacity(0.4)),
+                  border: Border.all(color: _accent.withValues(alpha: 0.4)),
                 ),
                 child: const Icon(Icons.person_outline_rounded,
                     color: _accent, size: 15),
@@ -358,7 +345,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          Divider(color: Colors.white.withOpacity(0.06), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
           const SizedBox(height: 14),
           Row(
             children: [
@@ -387,7 +374,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
     return Text(
       label,
       style: TextStyle(
-        color: Colors.white.withOpacity(0.35),
+        color: Colors.white.withValues(alpha: 0.35),
         fontSize: 11,
         letterSpacing: 1.4,
         fontWeight: FontWeight.w700,
@@ -407,7 +394,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: isSelected ? _accent.withOpacity(0.08) : _cardBg,
+              color: isSelected ? _accent.withValues(alpha: 0.08) : _cardBg,
               borderRadius: BorderRadius.circular(13),
               border: Border.all(
                 color: isSelected ? _accent : _border,
@@ -421,18 +408,18 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                   height: 36,
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? _accent.withOpacity(0.15)
-                        : Colors.white.withOpacity(0.04),
+                        ? _accent.withValues(alpha: 0.15)
+                        : Colors.white.withValues(alpha: 0.04),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: isSelected
-                          ? _accent.withOpacity(0.5)
-                          : Colors.white.withOpacity(0.08),
+                          ? _accent.withValues(alpha: 0.5)
+                          : Colors.white.withValues(alpha: 0.08),
                     ),
                   ),
                   child: Icon(
                     Icons.code_rounded,
-                    color: isSelected ? _accent : Colors.white.withOpacity(0.3),
+                    color: isSelected ? _accent : Colors.white.withValues(alpha: 0.3),
                     size: 17,
                   ),
                 ),
@@ -452,7 +439,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                     width: 22,
                     height: 22,
                     decoration: BoxDecoration(
-                      color: _accent.withOpacity(0.15),
+                      color: _accent.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.check_rounded,
@@ -481,7 +468,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             decoration: BoxDecoration(
-              color: isSelected ? _accent.withOpacity(0.08) : _cardBg,
+              color: isSelected ? _accent.withValues(alpha: 0.08) : _cardBg,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: isSelected ? _accent : _border,
@@ -493,7 +480,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
               children: [
                 Icon(
                   _envIcons[env] ?? Icons.tune_rounded,
-                  color: isSelected ? _accent : Colors.white.withOpacity(0.3),
+                  color: isSelected ? _accent : Colors.white.withValues(alpha: 0.3),
                   size: 16,
                 ),
                 const SizedBox(width: 8),
@@ -531,7 +518,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: _accentDark.withOpacity(0.35),
+                  color: _accentDark.withValues(alpha: 0.35),
                   blurRadius: 14,
                   offset: const Offset(0, 4),
                 ),
@@ -577,18 +564,18 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-              color: AppColors.red.withOpacity(0.4), width: 1.2),
+              color: AppColors.red.withValues(alpha: 0.4), width: 1.2),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.exit_to_app_rounded,
-                color: AppColors.red.withOpacity(0.8), size: 17),
+                color: AppColors.red.withValues(alpha: 0.8), size: 17),
             const SizedBox(width: 8),
             Text(
               'Leave Room',
               style: TextStyle(
-                color: AppColors.red.withOpacity(0.8),
+                color: AppColors.red.withValues(alpha: 0.8),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -621,7 +608,7 @@ class _InfoCell extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.35),
+            color: Colors.white.withValues(alpha: 0.35),
             fontSize: 10,
             letterSpacing: 1.2,
             fontWeight: FontWeight.w600,
@@ -631,7 +618,7 @@ class _InfoCell extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            color: valueColor ?? Colors.white.withOpacity(0.75),
+            color: valueColor ?? Colors.white.withValues(alpha: 0.75),
             fontSize: 13,
             fontWeight: FontWeight.w500,
             height: 1.4,

@@ -1,4 +1,3 @@
-import '../../../../core/errors/exceptions.dart';
 import '../models/user_model.dart';
 import 'auth_remote_data_source.dart';
 

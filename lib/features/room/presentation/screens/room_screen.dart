@@ -25,9 +25,7 @@ class _RoomScreenState extends State<RoomScreen> {
   String _searchQuery = '';
 
   static const Color _bgColor = Color(0xFF0D1117);
-  static const Color _cardColor = Color(0xFF161C2C);
   static const Color _accentBlue = Color(0xFF7C9EFF);
-  static const Color _accentBlueDark = Color(0xFF4B6EF5);
 
   @override
   void initState() {
@@ -168,7 +166,7 @@ class _RoomScreenState extends State<RoomScreen> {
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF3B5FD9).withOpacity(0.3),
+                                  color: const Color(0xFF3B5FD9).withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
                                 ),
@@ -203,11 +201,11 @@ class _RoomScreenState extends State<RoomScreen> {
                                 color: const Color(0xFF1E2640),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                    color: Colors.white.withOpacity(0.08)),
+                                    color: Colors.white.withValues(alpha: 0.08)),
                               ),
                               child: Icon(
                                 Icons.notifications_outlined,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 size: 19,
                               ),
                             ),
@@ -237,7 +235,7 @@ class _RoomScreenState extends State<RoomScreen> {
                               end: Alignment.bottomRight,
                             ),
                             border: Border.all(
-                                color: const Color(0xFF7C9EFF).withOpacity(0.5),
+                                color: const Color(0xFF7C9EFF).withValues(alpha: 0.5),
                                 width: 1.5),
                           ),
                           child: const Icon(Icons.person,
@@ -259,7 +257,7 @@ class _RoomScreenState extends State<RoomScreen> {
                     color: const Color(0xFF1A2035),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                        color: Colors.white.withOpacity(0.06)),
+                        color: Colors.white.withValues(alpha: 0.06)),
                   ),
                   child: TextField(
                     controller: _searchController,
@@ -268,9 +266,9 @@ class _RoomScreenState extends State<RoomScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search projects...',
                       hintStyle: TextStyle(
-                          color: Colors.white.withOpacity(0.25), fontSize: 14),
+                          color: Colors.white.withValues(alpha: 0.25), fontSize: 14),
                       prefixIcon: Icon(Icons.search,
-                          color: Colors.white.withOpacity(0.25), size: 20),
+                          color: Colors.white.withValues(alpha: 0.25), size: 20),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -323,11 +321,11 @@ class _RoomScreenState extends State<RoomScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.wifi_off, color: Colors.white.withOpacity(0.3), size: 48),
+            Icon(Icons.wifi_off, color: Colors.white.withValues(alpha: 0.3), size: 48),
             const SizedBox(height: 16),
             Text(_error!,
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.5), fontSize: 14),
+                    color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -352,11 +350,11 @@ class _RoomScreenState extends State<RoomScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.inbox_outlined,
-                color: Colors.white.withOpacity(0.2), size: 56),
+                color: Colors.white.withValues(alpha: 0.2), size: 56),
             const SizedBox(height: 16),
             Text('No rooms found',
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 16,
                     fontWeight: FontWeight.bold)),
           ],
@@ -402,17 +400,17 @@ class _RoomScreenState extends State<RoomScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                  color: Colors.white.withOpacity(0.12), width: 1.5),
+                  color: Colors.white.withValues(alpha: 0.12), width: 1.5),
               color: const Color(0xFF1A2035),
             ),
             child: Icon(Icons.add,
-                color: Colors.white.withOpacity(0.4), size: 22),
+                color: Colors.white.withValues(alpha: 0.4), size: 22),
           ),
           const SizedBox(height: 10),
           Text(
             'Start Fresh',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
@@ -421,7 +419,7 @@ class _RoomScreenState extends State<RoomScreen> {
           Text(
             'Create a new collaborative room',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.25),
+              color: Colors.white.withValues(alpha: 0.25),
               fontSize: 11,
             ),
           ),
@@ -464,12 +462,12 @@ class _FilterTab extends StatelessWidget {
           border: Border.all(
             color: selected
                 ? Colors.transparent
-                : Colors.white.withOpacity(0.08),
+                : Colors.white.withValues(alpha: 0.08),
           ),
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF3B5FD9).withOpacity(0.35),
+                    color: const Color(0xFF3B5FD9).withValues(alpha: 0.35),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -481,7 +479,7 @@ class _FilterTab extends StatelessWidget {
           style: TextStyle(
             color: selected
                 ? const Color(0xFF0D1B3E)
-                : Colors.white.withOpacity(0.4),
+                : Colors.white.withValues(alpha: 0.4),
             fontSize: 13,
             fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
           ),
@@ -531,7 +529,7 @@ class _RoomCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141D2E),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -550,13 +548,13 @@ class _RoomCard extends StatelessWidget {
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: isOwner
-                            ? const Color(0xFF4ADE80).withOpacity(0.15)
-                            : Colors.white.withOpacity(0.06),
+                            ? const Color(0xFF4ADE80).withValues(alpha: 0.15)
+                            : Colors.white.withValues(alpha: 0.06),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
                           color: isOwner
-                              ? const Color(0xFF4ADE80).withOpacity(0.5)
-                              : Colors.white.withOpacity(0.1),
+                              ? const Color(0xFF4ADE80).withValues(alpha: 0.5)
+                              : Colors.white.withValues(alpha: 0.1),
                         ),
                       ),
                       child: Text(
@@ -596,7 +594,7 @@ class _RoomCard extends StatelessWidget {
                       ? room.roles.join(' · ')
                       : room.roomCode,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 13,
                     height: 1.5,
                   ),

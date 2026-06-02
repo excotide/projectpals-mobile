@@ -149,7 +149,7 @@ class _JoinScreen2State extends State<JoinScreen2> {
           onPrimaryChanged: (v) => setState(() => _primaryRole = v),
           onBackupChanged: (v) => setState(() => _backupRole = v),
           onSubmit: _submitJoin,
-          onNext: () => setState(() => _step = 2),
+          onBack: () => setState(() => _step = 0),
         );
       case 2:
         return _SuccessStep(
@@ -390,7 +390,7 @@ class _RoleStep extends StatelessWidget {
   final String? primaryRole, backupRole;
   final ValueChanged<String?> onPrimaryChanged, onBackupChanged;
   final VoidCallback onSubmit;
-  final VoidCallback onNext;
+  final VoidCallback onBack;
 
   static const Map<String, IconData> _roleIcons = {
     'Frontend Developer': Icons.desktop_mac_outlined,
@@ -421,7 +421,7 @@ class _RoleStep extends StatelessWidget {
     required this.onPrimaryChanged,
     required this.onBackupChanged,
     required this.onSubmit,
-    required this.onNext,
+    required this.onBack,
   });
 
   @override
@@ -668,7 +668,7 @@ class _RoleStep extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton.icon(
-                onPressed: () {},
+                onPressed: onBack,
                 icon: const Icon(Icons.arrow_back_ios_new_rounded,
                     size: 14, color: AppColors.textGrey),
                 label: const Text(
@@ -681,10 +681,13 @@ class _RoleStep extends StatelessWidget {
                 child: BlocBuilder<RoomBloc, RoomState>(
                   builder: (context, state) {
                     final isLoading = state is RoomLoading;
+                    final canSubmit = primaryRole != null && !isLoading;
                     return ElevatedButton(
-                      onPressed: isLoading ? null : onNext,
+                      onPressed: canSubmit ? onSubmit : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryCyan,
+                        disabledBackgroundColor:
+                            AppColors.primaryCyan.withValues(alpha: 0.4),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24)),
                         elevation: 0,
@@ -702,7 +705,7 @@ class _RoleStep extends StatelessWidget {
                           : const Row(
                               children: [
                                 Text(
-                                  'Next',
+                                  'Join Room',
                                   style: TextStyle(
                                     color: Color(0xFF003642),
                                     fontSize: 15,

@@ -167,7 +167,7 @@ class _ProfileHero extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: const Color(0xFF002B35),
                   border: Border.all(
-                      color: Colors.white.withOpacity(0.5), width: 2.5),
+                      color: Colors.white.withValues(alpha: 0.5), width: 2.5),
                 ),
                 child: const Icon(Icons.person,
                     color: AppColors.primaryCyan, size: 48),
@@ -185,7 +185,7 @@ class _ProfileHero extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: const Color(0xFF002B35),
                       border: Border.all(
-                          color: Colors.white.withOpacity(0.7), width: 1.5),
+                          color: Colors.white.withValues(alpha: 0.7), width: 1.5),
                     ),
                     child: const Icon(Icons.edit,
                         color: Colors.white, size: 14),
@@ -198,7 +198,7 @@ class _ProfileHero extends StatelessWidget {
 
           // @username saja di dalam hero
           Text(
-            user != null ? '@${user.username}' : '@username',
+            user != null ? '${user.username}' : '@username',
             style: const TextStyle(
               color: Color(0xFF003642),
               fontSize: 16,
@@ -369,7 +369,7 @@ class _PreferenceChipsState extends State<_PreferenceChips> {
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
                 color: active
-                    ? AppColors.primaryCyan.withOpacity(0.18)
+                    ? AppColors.primaryCyan.withValues(alpha: 0.18)
                     : AppColors.cardBg,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
@@ -521,8 +521,8 @@ class _ProjectCard extends StatelessWidget {
                     horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: isCompleted
-                      ? AppColors.primaryCyan.withOpacity(0.15)
-                      : Colors.orange.withOpacity(0.15),
+                      ? AppColors.primaryCyan.withValues(alpha: 0.15)
+                      : Colors.orange.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: isCompleted

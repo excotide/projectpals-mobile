@@ -13,6 +13,7 @@ class JoinRoomScreen extends StatefulWidget {
 
 class _JoinRoomScreenState extends State<JoinRoomScreen> {
   final _codeCtrl = TextEditingController();
+  String? _pendingCode;
 
   @override
   void dispose() {
@@ -24,32 +25,31 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
     final code = _codeCtrl.text.trim().toUpperCase();
     if (code.isEmpty) return;
 
-    // ── MOCK: bypass backend, langsung ke JoinScreen2 ──
-    final mockPreview = {
-      'project_theme': 'Mock Project',
-      'roles': ['Frontend Developer', 'Backend Developer', 'UI/UX Designer', 'Project Manager'],
-      'max_per_group': 4,
-      'number_of_groups': 3,
-    };
-
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: context.read<RoomBloc>(),
-          child: JoinScreen2(
-            preview: mockPreview,
-            roomCode: code,
-          ),
-        ),
-      ),
-    );
+    // Ambil preview room dari API sebelum lanjut memilih peran.
+    setState(() => _pendingCode = code);
+    context.read<RoomBloc>().add(RoomPreviewRequested(code));
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<RoomBloc, RoomState>(
       listener: (context, state) {
-        if (state is RoomFailure) {
+        if (state is RoomPreviewLoaded && _pendingCode != null) {
+          final code = _pendingCode!;
+          _pendingCode = null;
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => BlocProvider.value(
+                value: context.read<RoomBloc>(),
+                child: JoinScreen2(
+                  preview: state.preview,
+                  roomCode: code,
+                ),
+              ),
+            ),
+          );
+        } else if (state is RoomFailure) {
+          _pendingCode = null;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -228,34 +228,48 @@ class _EnterCodeStep extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   height: 56,
-                  child: ElevatedButton(
-                    onPressed: onValidate,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryCyan,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28)),
-                      elevation: 0,
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'JOIN ROOM',
-                          style: TextStyle(
-                            color: Color(0xFF003642),
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                          ),
+                  child: BlocBuilder<RoomBloc, RoomState>(
+                    builder: (context, state) {
+                      final isLoading = state is RoomLoading;
+                      return ElevatedButton(
+                        onPressed: isLoading ? null : onValidate,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryCyan,
+                          disabledBackgroundColor:
+                              AppColors.primaryCyan.withValues(alpha: 0.4),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28)),
+                          elevation: 0,
                         ),
-                        SizedBox(width: 8),
-                        Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Color(0xFF003642),
-                          size: 18,
-                        ),
-                      ],
-                    ),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Color(0xFF003642)),
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'JOIN ROOM',
+                                    style: TextStyle(
+                                      color: Color(0xFF003642),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: Color(0xFF003642),
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                      );
+                    },
                   ),
                 ),
               ],

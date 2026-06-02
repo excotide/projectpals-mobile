@@ -10,6 +10,15 @@ import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
 import 'room_edit_screen.dart'; // ← import screen baru
 
+/// Format daftar preferensi (productivity windows / environments) untuk tampilan.
+/// Mengubah `["morning","flexible"]` → `"Morning, Flexible"`; kosong → `"Flexible"`.
+String _formatPrefs(List<String> values) {
+  if (values.isEmpty) return 'Flexible';
+  return values
+      .map((v) => v.isEmpty ? v : '${v[0].toUpperCase()}${v.substring(1)}')
+      .join(', ');
+}
+
 class RoomInformationScreen extends StatefulWidget {
   final RoomEntity room;
   const RoomInformationScreen({super.key, required this.room});
@@ -29,18 +38,11 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
   static const Color _bg = Color(0xFF0D1117);
   static const Color _cardBg = Color(0xFF141D2E);
   static const Color _accent = Color(0xFF7C9EFF);
-  static const Color _accentLight = Color(0xFFB8CDFF);
-  static const Color _green = Color(0xFF4ADE80);
   static const Color _border = Color(0x14FFFFFF);
 
   bool get _isOwner {
     final s = context.read<AuthBloc>().state;
     return s is AuthAuthenticated && _room.createdBy == s.user.id;
-  }
-
-  String? get _currentUserId {
-    final s = context.read<AuthBloc>().state;
-    return s is AuthAuthenticated ? s.user.id.toString() : null;
   }
 
   @override
@@ -152,7 +154,7 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.more_vert, color: Colors.white.withOpacity(0.7)),
+            icon: Icon(Icons.more_vert, color: Colors.white.withValues(alpha: 0.7)),
             onPressed: () => _showOptionsSheet(context),
           ),
         ],
@@ -190,7 +192,7 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
             ),
             child: Icon(
               _showSearch ? Icons.close : Icons.search,
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               size: 16,
             ),
           ),
@@ -205,7 +207,7 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
             border: Border.all(color: _border),
           ),
           child: Icon(Icons.tune_rounded,
-              color: Colors.white.withOpacity(0.5), size: 16),
+              color: Colors.white.withValues(alpha: 0.5), size: 16),
         ),
       ],
     );
@@ -226,9 +228,9 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
         decoration: InputDecoration(
           hintText: 'Cari anggota...',
           hintStyle:
-              TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 13),
+              TextStyle(color: Colors.white.withValues(alpha: 0.25), fontSize: 13),
           prefixIcon: Icon(Icons.search,
-              color: Colors.white.withOpacity(0.25), size: 18),
+              color: Colors.white.withValues(alpha: 0.25), size: 18),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
@@ -252,7 +254,7 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
         child: Center(
           child: Text(
             _memberSearch.isNotEmpty ? 'Tidak ditemukan' : 'Belum ada anggota',
-            style: TextStyle(color: Colors.white.withOpacity(0.3)),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
           ),
         ),
       );
@@ -276,7 +278,7 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
         backgroundColor: const Color(0xFF161C2C),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         title: const Text('Keluarkan Anggota?',
             style: TextStyle(
@@ -316,7 +318,7 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -393,10 +395,10 @@ class _RoomInfoCard extends StatelessWidget {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF7C9EFF).withOpacity(0.12),
+                    color: const Color(0xFF7C9EFF).withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: const Color(0xFF7C9EFF).withOpacity(0.3)),
+                        color: const Color(0xFF7C9EFF).withValues(alpha: 0.3)),
                   ),
                   child: const Icon(Icons.info_outline_rounded,
                       color: Color(0xFF7C9EFF), size: 14),
@@ -433,7 +435,7 @@ class _RoomInfoCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF3B5FD9).withOpacity(0.3),
+                          color: const Color(0xFF3B5FD9).withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -455,7 +457,7 @@ class _RoomInfoCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            child: Divider(color: Colors.white.withOpacity(0.06), height: 1),
+            child: Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
           ),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -486,13 +488,13 @@ class _RoomInfoCard extends StatelessWidget {
                     Expanded(
                       child: _InfoCell(
                         label: 'PRODUCTIVITY',
-                        value: 'Flexible',
+                        value: _formatPrefs(room.productivityWindows),
                       ),
                     ),
                     Expanded(
                       child: _InfoCell(
                         label: 'ENVIRONMENT',
-                        value: '● Flexible',
+                        value: '● ${_formatPrefs(room.environments)}',
                         valueColor: const Color(0xFF4ADE80),
                       ),
                     ),
@@ -526,7 +528,7 @@ class _InfoCell extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.35),
+            color: Colors.white.withValues(alpha: 0.35),
             fontSize: 10,
             letterSpacing: 1.2,
             fontWeight: FontWeight.w600,
@@ -536,7 +538,7 @@ class _InfoCell extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            color: valueColor ?? Colors.white.withOpacity(0.75),
+            color: valueColor ?? Colors.white.withValues(alpha: 0.75),
             fontSize: 13,
             fontWeight: FontWeight.w500,
             height: 1.4,
@@ -567,10 +569,10 @@ class _SmartMatchingCard extends StatelessWidget {
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFF7C9EFF).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF7C9EFF).withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF5B7FFF).withOpacity(0.2),
+            color: const Color(0xFF5B7FFF).withValues(alpha: 0.2),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -582,12 +584,12 @@ class _SmartMatchingCard extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.location_on_outlined,
-                  color: _navyDark.withOpacity(0.7), size: 13),
+                  color: _navyDark.withValues(alpha: 0.7), size: 13),
               const SizedBox(width: 4),
               Text(
                 'FIND GROUP',
                 style: TextStyle(
-                  color: _navyDark.withOpacity(0.7),
+                  color: _navyDark.withValues(alpha: 0.7),
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
@@ -609,7 +611,7 @@ class _SmartMatchingCard extends StatelessWidget {
           Text(
             "Find the perfect collaborators with our AI-driven matchmaking algorithm. Maximize your group productivity.",
             style: TextStyle(
-              color: _navyDark.withOpacity(0.65),
+              color: _navyDark.withValues(alpha: 0.65),
               fontSize: 13,
               height: 1.5,
             ),
@@ -625,7 +627,7 @@ class _SmartMatchingCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -701,7 +703,7 @@ class _MemberCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141D2E),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
       ),
       child: Row(
         children: [
@@ -772,12 +774,12 @@ class _MemberCard extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.08),
+                  color: Colors.red.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.withOpacity(0.15)),
+                  border: Border.all(color: Colors.red.withValues(alpha: 0.15)),
                 ),
                 child: Icon(Icons.delete_outline,
-                    color: Colors.red.withOpacity(0.5), size: 16),
+                    color: Colors.red.withValues(alpha: 0.5), size: 16),
               ),
             ),
         ],
@@ -800,9 +802,9 @@ class _RoleBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Text(
         label,

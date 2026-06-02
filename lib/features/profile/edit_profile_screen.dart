@@ -151,7 +151,7 @@ class _EditProfileHero extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: const Color(0xFF002B35),
                   border: Border.all(
-                      color: Colors.white.withOpacity(0.5), width: 2.5),
+                      color: Colors.white.withValues(alpha: 0.5), width: 2.5),
                 ),
                 child: const Icon(Icons.person,
                     color: AppColors.primaryCyan, size: 48),
@@ -166,7 +166,7 @@ class _EditProfileHero extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: const Color(0xFF002B35),
                     border: Border.all(
-                        color: Colors.white.withOpacity(0.7), width: 1.5),
+                        color: Colors.white.withValues(alpha: 0.7), width: 1.5),
                   ),
                   child: const Icon(Icons.edit,
                       color: Colors.white, size: 14),
@@ -321,7 +321,7 @@ class _EditPreferenceChips extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
                 color: active
-                    ? AppColors.primaryCyan.withOpacity(0.18)
+                    ? AppColors.primaryCyan.withValues(alpha: 0.18)
                     : AppColors.cardBg,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(

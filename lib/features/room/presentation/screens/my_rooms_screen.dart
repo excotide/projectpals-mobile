@@ -10,6 +10,19 @@ import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
 import 'team_dashboard_screen.dart';
 
+/// Format tanggal ISO (mis. `2026-05-11T08:00:00Z`) → `May 11, 2026`.
+String _formatDate(String? iso) {
+  if (iso == null) return '';
+  final dt = DateTime.tryParse(iso);
+  if (dt == null) return '';
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+  final local = dt.toLocal();
+  return '${months[local.month - 1]} ${local.day}, ${local.year}';
+}
+
 class MyRoomsScreen extends StatefulWidget {
   const MyRoomsScreen({super.key});
 
@@ -25,11 +38,9 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
 
   // ── Color palette ──
   static const Color _bg         = Color(0xFF0D1117);
-  static const Color _cardBg     = Color(0xFF141D2E);
   static const Color _accent     = Color(0xFF7C9EFF);
   static const Color _accentLight= Color(0xFFB8CDFF);
   static const Color _accentBlue = Color(0xFF4B6EF5);
-  static const Color _accentDark = Color(0xFF3B5FD9);
   static const Color _surface    = Color(0xFF1A2035);
   static const Color _navyBg     = Color(0xFF1E2640);
 
@@ -193,11 +204,11 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
                 decoration: BoxDecoration(
                   color: _navyBg,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                 ),
                 child: Icon(
                   Icons.search_rounded,
-                  color: Colors.white.withOpacity(0.65),
+                  color: Colors.white.withValues(alpha: 0.65),
                   size: 18,
                 ),
               ),
@@ -213,7 +224,7 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
                     end: Alignment.bottomRight,
                   ),
                   border: Border.all(
-                    color: _accent.withOpacity(0.5),
+                    color: _accent.withValues(alpha: 0.5),
                     width: 1.5,
                   ),
                 ),
@@ -279,12 +290,12 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.wifi_off,
-                color: Colors.white.withOpacity(0.3), size: 48),
+                color: Colors.white.withValues(alpha: 0.3), size: 48),
             const SizedBox(height: 16),
             Text(
               _error!,
               style: TextStyle(
-                  color: Colors.white.withOpacity(0.5), fontSize: 14),
+                  color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -311,12 +322,12 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.inbox_outlined,
-                color: Colors.white.withOpacity(0.2), size: 52),
+                color: Colors.white.withValues(alpha: 0.2), size: 52),
             const SizedBox(height: 14),
             Text(
               'No rooms found',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.45),
+                color: Colors.white.withValues(alpha: 0.45),
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
@@ -363,16 +374,16 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
               shape: BoxShape.circle,
               color: _surface,
               border: Border.all(
-                  color: Colors.white.withOpacity(0.12), width: 1.5),
+                  color: Colors.white.withValues(alpha: 0.12), width: 1.5),
             ),
             child: Icon(Icons.add,
-                color: Colors.white.withOpacity(0.4), size: 22),
+                color: Colors.white.withValues(alpha: 0.4), size: 22),
           ),
           const SizedBox(height: 10),
           Text(
             'Start Fresh',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.65),
+              color: Colors.white.withValues(alpha: 0.65),
               fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
@@ -381,7 +392,7 @@ class _MyRoomsScreenState extends State<MyRoomsScreen> {
           Text(
             'Create a new collaborative room',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.25),
+              color: Colors.white.withValues(alpha: 0.25),
               fontSize: 11,
             ),
           ),
@@ -427,12 +438,12 @@ class _TabChip extends StatelessWidget {
           border: Border.all(
             color: selected
                 ? Colors.transparent
-                : Colors.white.withOpacity(0.08),
+                : Colors.white.withValues(alpha: 0.08),
           ),
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF3B5FD9).withOpacity(0.35),
+                    color: const Color(0xFF3B5FD9).withValues(alpha: 0.35),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -448,7 +459,7 @@ class _TabChip extends StatelessWidget {
               style: TextStyle(
                 color: selected
                     ? const Color(0xFF0D1B3E)
-                    : Colors.white.withOpacity(0.6),
+                    : Colors.white.withValues(alpha: 0.6),
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
@@ -459,8 +470,8 @@ class _TabChip extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
               decoration: BoxDecoration(
                 color: selected
-                    ? const Color(0xFF0D1B3E).withOpacity(0.18)
-                    : Colors.white.withOpacity(0.08),
+                    ? const Color(0xFF0D1B3E).withValues(alpha: 0.18)
+                    : Colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -468,7 +479,7 @@ class _TabChip extends StatelessWidget {
                 style: TextStyle(
                   color: selected
                       ? const Color(0xFF0D1B3E)
-                      : Colors.white.withOpacity(0.5),
+                      : Colors.white.withValues(alpha: 0.5),
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                 ),
@@ -511,34 +522,34 @@ class _MyRoomCard extends StatelessWidget {
       };
 
   Color get _statusBg => switch (room.status) {
-        'open' => const Color(0xFF4ADE80).withOpacity(0.12),
+        'open' => const Color(0xFF4ADE80).withValues(alpha: 0.12),
         'ongoing' || 'in_progress' || 'matched' =>
-          const Color(0xFF4ADE80).withOpacity(0.12),
-        'matching' => const Color(0xFFFBBF24).withOpacity(0.12),
-        _ => Colors.white.withOpacity(0.05),
+          const Color(0xFF4ADE80).withValues(alpha: 0.12),
+        'matching' => const Color(0xFFFBBF24).withValues(alpha: 0.12),
+        _ => Colors.white.withValues(alpha: 0.05),
       };
 
   Color get _statusBorder => switch (room.status) {
-        'open' => const Color(0xFF4ADE80).withOpacity(0.3),
+        'open' => const Color(0xFF4ADE80).withValues(alpha: 0.3),
         'ongoing' || 'in_progress' || 'matched' =>
-          const Color(0xFF4ADE80).withOpacity(0.3),
-        'matching' => const Color(0xFFFBBF24).withOpacity(0.3),
-        _ => Colors.white.withOpacity(0.1),
+          const Color(0xFF4ADE80).withValues(alpha: 0.3),
+        'matching' => const Color(0xFFFBBF24).withValues(alpha: 0.3),
+        _ => Colors.white.withValues(alpha: 0.1),
       };
 
   // Gradient border warna sesuai status
   List<Color> get _cardBorderColors => switch (room.status) {
         'open' => [
-            const Color(0xFF4ADE80).withOpacity(0.4),
-            const Color(0xFF4ADE80).withOpacity(0.05),
+            const Color(0xFF4ADE80).withValues(alpha: 0.4),
+            const Color(0xFF4ADE80).withValues(alpha: 0.05),
           ],
         'ongoing' || 'in_progress' || 'matched' => [
-            const Color(0xFF4ADE80).withOpacity(0.4),
-            const Color(0xFF4ADE80).withOpacity(0.05),
+            const Color(0xFF4ADE80).withValues(alpha: 0.4),
+            const Color(0xFF4ADE80).withValues(alpha: 0.05),
           ],
         _ => [
-            Colors.white.withOpacity(0.08),
-            Colors.white.withOpacity(0.02),
+            Colors.white.withValues(alpha: 0.08),
+            Colors.white.withValues(alpha: 0.02),
           ],
       };
 
@@ -596,7 +607,7 @@ class _MyRoomCard extends StatelessWidget {
                 Text(
                   room.roomCode,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.28),
+                    color: Colors.white.withValues(alpha: 0.28),
                     fontSize: 9,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
@@ -621,11 +632,11 @@ class _MyRoomCard extends StatelessWidget {
             ),
             const SizedBox(height: 3),
 
-            // ── Creator ──
+            // ── Owner / Member ──
             Text(
-              'dev1',
+              isOwner ? 'Created by you' : 'Joined room',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.35),
+                color: Colors.white.withValues(alpha: 0.35),
                 fontSize: 11,
               ),
             ),
@@ -633,9 +644,9 @@ class _MyRoomCard extends StatelessWidget {
 
             // ── Date ──
             Text(
-              'May 31, 2026',
+              _formatDate(room.createdAt),
               style: TextStyle(
-                color: Colors.white.withOpacity(0.28),
+                color: Colors.white.withValues(alpha: 0.28),
                 fontSize: 11,
               ),
             ),
@@ -645,23 +656,23 @@ class _MyRoomCard extends StatelessWidget {
             Row(
               children: [
                 Icon(Icons.people_outline_rounded,
-                    color: Colors.white.withOpacity(0.45), size: 14),
+                    color: Colors.white.withValues(alpha: 0.45), size: 14),
                 const SizedBox(width: 4),
                 Text(
                   '${room.maxPerGroup} max',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.45),
+                    color: Colors.white.withValues(alpha: 0.45),
                     fontSize: 12,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Icon(Icons.grid_view_rounded,
-                    color: Colors.white.withOpacity(0.45), size: 14),
+                    color: Colors.white.withValues(alpha: 0.45), size: 14),
                 const SizedBox(width: 4),
                 Text(
                   '${room.numberOfGroups} teams',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.45),
+                    color: Colors.white.withValues(alpha: 0.45),
                     fontSize: 12,
                   ),
                 ),
@@ -680,11 +691,11 @@ class _MyRoomCard extends StatelessWidget {
                             horizontal: 9, vertical: 4),
                         decoration: BoxDecoration(
                           color:
-                              const Color(0xFF7C9EFF).withOpacity(0.08),
+                              const Color(0xFF7C9EFF).withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
                               color: const Color(0xFF7C9EFF)
-                                  .withOpacity(0.2)),
+                                  .withValues(alpha: 0.2)),
                         ),
                         child: Text(
                           role,
@@ -700,15 +711,15 @@ class _MyRoomCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 9, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.04),
+                        color: Colors.white.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                            color: Colors.white.withOpacity(0.08)),
+                            color: Colors.white.withValues(alpha: 0.08)),
                       ),
                       child: Text(
                         '+${room.roles.length - 3} more',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.35),
+                          color: Colors.white.withValues(alpha: 0.35),
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                         ),
@@ -741,19 +752,19 @@ class _MyRoomCard extends StatelessWidget {
                         color: const Color(0xFF1A2035),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                            color: Colors.white.withOpacity(0.1)),
+                            color: Colors.white.withValues(alpha: 0.1)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.copy_rounded,
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                               size: 14),
                           const SizedBox(width: 6),
                           Text(
                             'Copy Code',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -780,7 +791,7 @@ class _MyRoomCard extends StatelessWidget {
                         boxShadow: [
                           BoxShadow(
                             color:
-                                const Color(0xFF3B5FD9).withOpacity(0.35),
+                                const Color(0xFF3B5FD9).withValues(alpha: 0.35),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           ),
