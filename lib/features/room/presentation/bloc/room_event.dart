@@ -30,14 +30,16 @@ class RoomPreviewRequested extends RoomEvent {
 class RoomJoinRequested extends RoomEvent {
   final String roomCode;
   final String? primaryRole;
-  final String? backupRole;
+  final List<String>? backupRoles;
   final List<String>? productivityWindows;
+  final List<String>? environments;
 
   RoomJoinRequested({
     required this.roomCode,
     this.primaryRole,
-    this.backupRole,
+    this.backupRoles,
     this.productivityWindows,
+    this.environments,
   });
 }
 

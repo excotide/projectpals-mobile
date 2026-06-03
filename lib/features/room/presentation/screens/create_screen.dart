@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../domain/entities/role_normalization.dart';
+import '../../domain/entities/room_entity.dart';
+import '../bloc/role_normalizer_cubit.dart';
 import '../bloc/room_bloc.dart';
+import 'join_screen2.dart';
+import 'room_detail_screen.dart';
 
 class CreateRoomScreen extends StatefulWidget {
   const CreateRoomScreen({super.key});
@@ -14,12 +19,21 @@ class CreateRoomScreen extends StatefulWidget {
 class _CreateRoomScreenState extends State<CreateRoomScreen> {
   int _currentStep = 0;
   final int _totalSteps = 3;
+  int _slideDir = 1; // 1 = forward (slide in from right), -1 = back (from left)
 
   final _roomNameCtrl = TextEditingController();
   final _roleCtrl = TextEditingController();
   final List<String> _roles = [];
   int _maxPeoplePerGroup = 2;
   int _numberOfGroups = 2;
+  bool _createRoomOnly = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Bersihkan state preview dari sesi sebelumnya (cubit disediakan global).
+    context.read<RoleNormalizerCubit>().reset();
+  }
 
   double get _progress => (_currentStep + 1) / _totalSteps;
   String get _progressLabel =>
@@ -40,7 +54,13 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   void _next() {
     if (_currentStep < _totalSteps - 1) {
-      setState(() => _currentStep++);
+      setState(() {
+        _slideDir = 1;
+        _currentStep++;
+        // Saat masuk step Finalize, pastikan max member memenuhi minimum.
+        final minMembers = _roles.length * _numberOfGroups;
+        if (_maxPeoplePerGroup < minMembers) _maxPeoplePerGroup = minMembers;
+      });
     } else {
       context.read<RoomBloc>().add(RoomCreateRequested(
             projectTheme: _roomNameCtrl.text.trim(),
@@ -54,7 +74,10 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   void _back() {
     if (_currentStep > 0) {
-      setState(() => _currentStep--);
+      setState(() {
+        _slideDir = -1;
+        _currentStep--;
+      });
     } else {
       Navigator.of(context).maybePop();
     }
@@ -65,7 +88,14 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     return BlocListener<RoomBloc, RoomState>(
       listener: (context, state) {
         if (state is RoomCreated) {
-          _showSuccessDialog(state.room.roomCode);
+          if (_createRoomOnly) {
+            // Owner hanya membuat & memantau — langsung ke detail room.
+            _goToRoomDetail(state.room);
+          } else {
+            // Owner langsung ikut join: pilih window/environment + role,
+            // lalu diarahkan ke detail room setelah sukses.
+            _goToSelfJoin(state.room);
+          }
         } else if (state is RoomFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -150,14 +180,15 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
               ),
               Expanded(
                 child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  transitionBuilder: (child, anim) => FadeTransition(
-                    opacity: anim,
+                  duration: const Duration(milliseconds: 300),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  transitionBuilder: (child, anim) => ClipRect(
                     child: SlideTransition(
                       position: Tween<Offset>(
-                              begin: const Offset(0.05, 0),
-                              end: Offset.zero)
-                          .animate(anim),
+                        begin: Offset(_slideDir.toDouble(), 0),
+                        end: Offset.zero,
+                      ).animate(anim),
                       child: child,
                     ),
                   ),
@@ -278,30 +309,26 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     );
   }
 
-  void _showSuccessDialog(String roomCode) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black87,
-      builder: (_) => _SuccessDialog(
-        onOk: () {
-          Navigator.of(context).pop();
-          _showRoomInfoSheet(roomCode);
-        },
-      ),
+  /// Arahkan langsung ke halaman detail room yang baru dibuat.
+  void _goToRoomDetail(RoomEntity room) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => RoomDetailScreen(room: room)),
     );
   }
 
-  void _showRoomInfoSheet(String roomCode) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _RoomInfoSheet(
-        roomName: _roomNameCtrl.text.trim(),
-        memberPerGroup: _maxPeoplePerGroup,
-        groups: _numberOfGroups,
-        roomCode: roomCode,
+  /// Arahkan owner ke flow join yang ada (pilih window/environment + role)
+  /// memakai data room baru sebagai preview; setelah join → detail room.
+  void _goToSelfJoin(RoomEntity room) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => JoinScreen2(
+          roomCode: room.roomCode,
+          createdRoom: room,
+          preview: {
+            'roles': room.roles,
+            'project_theme': room.projectTheme,
+          },
+        ),
       ),
     );
   }
@@ -319,10 +346,20 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
             onRolesChanged: () => setState(() {}));
       case 2:
         return _StepFinalize(
+          rolesCount: _roles.length,
           maxPeoplePerGroup: _maxPeoplePerGroup,
           numberOfGroups: _numberOfGroups,
-          onPeopleChanged: (v) => setState(() => _maxPeoplePerGroup = v),
-          onGroupsChanged: (v) => setState(() => _numberOfGroups = v),
+          createRoomOnly: _createRoomOnly,
+          onCreateRoomOnlyChanged: (v) => setState(() => _createRoomOnly = v),
+          onPeopleChanged: (v) => setState(() {
+            final minMembers = _roles.length * _numberOfGroups;
+            _maxPeoplePerGroup = v < minMembers ? minMembers : v;
+          }),
+          onGroupsChanged: (v) => setState(() {
+            _numberOfGroups = v < 2 ? 2 : v;
+            final minMembers = _roles.length * _numberOfGroups;
+            if (_maxPeoplePerGroup < minMembers) _maxPeoplePerGroup = minMembers;
+          }),
         );
       default:
         return const SizedBox.shrink();
@@ -401,13 +438,33 @@ class _StepRoleDefinition extends StatelessWidget {
       required this.roles,
       required this.onRolesChanged});
 
-  void _addRole() {
-    final role = roleController.text.trim();
-    if (role.isNotEmpty && !roles.contains(role)) {
-      roles.add(role);
-      roleController.clear();
-      onRolesChanged();
+  Future<void> _addRole(BuildContext context) async {
+    final raw = roleController.text.trim();
+    if (raw.isEmpty) return;
+
+    // Normalisasi ke nama role kanonik via backend (fallback ke input mentah).
+    final cubit = context.read<RoleNormalizerCubit>();
+    final canonical = await cubit.resolve(raw);
+    if (!context.mounted) return;
+
+    if (!roles.any((r) => r.toLowerCase() == canonical.toLowerCase())) {
+      roles.add(canonical);
     }
+    roleController.clear();
+    cubit.reset();
+    onRolesChanged();
+  }
+
+  /// Menambah role kanonik yang dipilih dari dropdown saran (nilai sudah ternormalisasi).
+  void _pickRole(BuildContext context, String canonical) {
+    final value = canonical.trim();
+    if (value.isEmpty) return;
+    if (!roles.any((r) => r.toLowerCase() == value.toLowerCase())) {
+      roles.add(value);
+    }
+    roleController.clear();
+    context.read<RoleNormalizerCubit>().reset();
+    onRolesChanged();
   }
 
   @override
@@ -454,12 +511,13 @@ class _StepRoleDefinition extends StatelessWidget {
                 child: _InputField(
                     controller: roleController,
                     hint: 'Required (Min. 2)',
-                    onChanged: (_) {},
-                    onSubmitted: (_) => _addRole()),
+                    onChanged: (v) =>
+                        context.read<RoleNormalizerCubit>().previewDebounced(v),
+                    onSubmitted: (_) => _addRole(context)),
               ),
               const SizedBox(width: 10),
               GestureDetector(
-                onTap: _addRole,
+                onTap: () => _addRole(context),
                 child: Container(
                   width: 48,
                   height: 54,
@@ -477,6 +535,8 @@ class _StepRoleDefinition extends StatelessWidget {
               ),
             ],
           ),
+          _RoleSuggestionDropdown(
+              onPick: (canonical) => _pickRole(context, canonical)),
           const SizedBox(height: 20),
           ...List.generate(roles.length, (i) {
             return Container(
@@ -523,12 +583,151 @@ class _StepRoleDefinition extends StatelessWidget {
   }
 }
 
+/// Dropdown saran role di bawah input: menampilkan hasil normalisasi dari
+/// [RoleNormalizerCubit] sebagai item yang bisa diklik untuk langsung ditambah.
+class _RoleSuggestionDropdown extends StatelessWidget {
+  final void Function(String canonical) onPick;
+  const _RoleSuggestionDropdown({required this.onPick});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RoleNormalizerCubit, RoleNormalizerState>(
+      builder: (context, state) {
+        final Widget child = switch (state) {
+          RoleNormalizerLoading() => _panel(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 14),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFF7C9EFF)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Mencari saran role…',
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.5),
+                          fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          RoleNormalizerSuccess(:final result) =>
+            _panel(child: _suggestionTile(result)),
+          _ => const SizedBox.shrink(),
+        };
+
+        final hasPanel =
+            state is RoleNormalizerLoading || state is RoleNormalizerSuccess;
+        return AnimatedSize(
+          duration: const Duration(milliseconds: 180),
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: EdgeInsets.only(top: hasPanel ? 8 : 0),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _panel({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+            color: const Color(0xFF7C9EFF).withValues(alpha: 0.45)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _suggestionTile(RoleNormalization result) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => onPick(result.normalized),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.auto_awesome_rounded,
+                    size: 16, color: Color(0xFF0D1B3E)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      result.normalized,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      result.changed
+                          ? 'Saran dari "${result.original}" · ketuk untuk tambah'
+                          : 'Ketuk untuk tambah',
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.add_circle_outline_rounded,
+                  color: Color(0xFF7C9EFF), size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _StepFinalize extends StatelessWidget {
-  final int maxPeoplePerGroup, numberOfGroups;
+  final int rolesCount, maxPeoplePerGroup, numberOfGroups;
+  final bool createRoomOnly;
+  final ValueChanged<bool> onCreateRoomOnlyChanged;
   final ValueChanged<int> onPeopleChanged, onGroupsChanged;
   const _StepFinalize(
-      {required this.maxPeoplePerGroup,
+      {required this.rolesCount,
+      required this.maxPeoplePerGroup,
       required this.numberOfGroups,
+      required this.createRoomOnly,
+      required this.onCreateRoomOnlyChanged,
       required this.onPeopleChanged,
       required this.onGroupsChanged});
 
@@ -548,7 +747,7 @@ class _StepFinalize extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Set group limits before launching the room.',
+            'Set a limit on the number of group members before starting a room. All roles in the room will be filled by each team, so the minimum number of members will increase based on the number of roles and teams you add.',
             style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.4),
                 fontSize: 14,
@@ -570,22 +769,122 @@ class _StepFinalize extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          _CounterCard(
-              label: 'Max People Per Group',
-              sublabel: 'Range: 2–20',
+          _EditableCounterCard(
+              label: 'Max member room',
+              sublabel: 'Min: ${rolesCount * numberOfGroups}',
               value: maxPeoplePerGroup,
-              min: 2,
-              max: 20,
+              min: rolesCount * numberOfGroups,
               onChanged: onPeopleChanged),
           const SizedBox(height: 12),
-          _CounterCard(
-              label: 'Number of Groups',
-              sublabel: 'Range: 2–50',
+          _EditableCounterCard(
+              label: 'Number of teams',
+              sublabel: 'Min: 2',
               value: numberOfGroups,
               min: 2,
-              max: 50,
               onChanged: onGroupsChanged),
+          const SizedBox(height: 24),
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [Color(0xFF7C9EFF), Color(0xFFB8CDFF)],
+            ).createShader(bounds),
+            child: const Text(
+              'OWNER PARTICIPATION',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          _CreateRoomOnlyTile(
+              value: createRoomOnly, onChanged: onCreateRoomOnlyChanged),
         ],
+      ),
+    );
+  }
+}
+
+/// Checkbox "Create Room Only": jika dicentang, owner hanya membuat &
+/// memantau room tanpa ikut bergabung/dimatch ke team.
+class _CreateRoomOnlyTile extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  const _CreateRoomOnlyTile({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: AppColors.cardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: value
+                ? const Color(0xFF7C9EFF)
+                : AppColors.borderColor,
+            width: value ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                gradient: value
+                    ? const LinearGradient(
+                        colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                color: value ? null : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: value
+                      ? Colors.transparent
+                      : const Color(0xFF7C9EFF).withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+              ),
+              child: value
+                  ? const Icon(Icons.check_rounded,
+                      size: 16, color: Color(0xFF0D1B3E))
+                  : null,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Create Room Only',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Buat room tanpa ikut jadi anggota — kamu hanya '
+                    'memantau, tidak ikut dimatch ke team.',
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.4),
+                        fontSize: 12,
+                        height: 1.4),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -593,20 +892,61 @@ class _StepFinalize extends StatelessWidget {
 
 // ── Shared widgets ─────────────────────────────────────────────────────────────
 
-class _CounterCard extends StatelessWidget {
+class _EditableCounterCard extends StatefulWidget {
   final String label, sublabel;
-  final int value, min, max;
+  final int value, min;
   final ValueChanged<int> onChanged;
-  const _CounterCard(
+  const _EditableCounterCard(
       {required this.label,
       required this.sublabel,
       required this.value,
       required this.min,
-      required this.max,
       required this.onChanged});
 
   @override
+  State<_EditableCounterCard> createState() => _EditableCounterCardState();
+}
+
+class _EditableCounterCardState extends State<_EditableCounterCard> {
+  late final TextEditingController _ctrl;
+  final _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = TextEditingController(text: '${widget.value}');
+    _focus.addListener(() {
+      if (!_focus.hasFocus) _commit();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant _EditableCounterCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Sinkronkan field saat value diubah dari luar (mis. min dinaikkan).
+    if (widget.value != oldWidget.value && !_focus.hasFocus) {
+      _ctrl.text = '${widget.value}';
+    }
+  }
+
+  /// Bersihkan & clamp isi field ke minimum, lalu propagasi ke parent.
+  void _commit() {
+    final parsed = int.tryParse(_ctrl.text.trim()) ?? widget.min;
+    final clamped = parsed < widget.min ? widget.min : parsed;
+    if (_ctrl.text != '$clamped') _ctrl.text = '$clamped';
+    if (clamped != widget.value) widget.onChanged(clamped);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final canDecrement = widget.value > widget.min;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
@@ -620,12 +960,12 @@ class _CounterCard extends StatelessWidget {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label,
+                  Text(widget.label,
                       style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.w600)),
-                  Text(sublabel,
+                  Text(widget.sublabel,
                       style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.4),
                           fontSize: 11)),
@@ -635,20 +975,37 @@ class _CounterCard extends StatelessWidget {
             children: [
               _CircleBtn(
                   icon: Icons.remove,
-                  enabled: value > min,
-                  onTap: value > min ? () => onChanged(value - 1) : null),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text('$value',
+                  enabled: canDecrement,
+                  onTap: canDecrement
+                      ? () => widget.onChanged(widget.value - 1)
+                      : null),
+              SizedBox(
+                width: 48,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: TextField(
+                    controller: _ctrl,
+                    focusNode: _focus,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onSubmitted: (_) => _commit(),
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold)),
+                        fontWeight: FontWeight.bold),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: 4),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
               ),
               _CircleBtn(
                   icon: Icons.add,
-                  enabled: value < max,
-                  onTap: value < max ? () => onChanged(value + 1) : null),
+                  enabled: true,
+                  onTap: () => widget.onChanged(widget.value + 1)),
             ],
           ),
         ],
@@ -745,349 +1102,6 @@ class _InputFieldState extends State<_InputField> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         ),
-      ),
-    );
-  }
-}
-
-// ── Success Dialog ─────────────────────────────────────────────────────────────
-class _SuccessDialog extends StatefulWidget {
-  final VoidCallback onOk;
-  const _SuccessDialog({required this.onOk});
-
-  @override
-  State<_SuccessDialog> createState() => _SuccessDialogState();
-}
-
-class _SuccessDialogState extends State<_SuccessDialog>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _scale, _glow;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-        duration: const Duration(milliseconds: 600), vsync: this);
-    _scale = CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut);
-    _glow = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _ctrl.forward();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-            color: AppColors.darkBlueBg,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.borderColor)),
-        padding:
-            const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedBuilder(
-              animation: _ctrl,
-              builder: (context, _) => Transform.scale(
-                scale: _scale.value,
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.cardBg,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF4ADE80)
-                            .withValues(alpha: 0.5 * _glow.value),
-                        blurRadius: 30,
-                        spreadRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.check_rounded,
-                      color: Color(0xFF4ADE80), size: 40),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Room Created!',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: widget.onOk,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                  padding: EdgeInsets.zero,
-                ),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'View Room Info',
-                      style: TextStyle(
-                        color: Color(0xFF0D1B3E),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Room Info Sheet ────────────────────────────────────────────────────────────
-class _RoomInfoSheet extends StatelessWidget {
-  final String roomName, roomCode;
-  final int memberPerGroup, groups;
-  const _RoomInfoSheet(
-      {required this.roomName,
-      required this.roomCode,
-      required this.memberPerGroup,
-      required this.groups});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.darkBlueBg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      padding: EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 24,
-        bottom: MediaQuery.of(context).padding.bottom + 32,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                    color: AppColors.borderColor,
-                    borderRadius: BorderRadius.circular(2))),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Room Created',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Share the code with your friends',
-                      style: TextStyle(
-                          color: AppColors.textGrey, fontSize: 13),
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Icon(Icons.close,
-                    color: Colors.white.withValues(alpha: 0.4)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.cardBg,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.borderColor),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'ROOM NAME',
-                  style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      fontSize: 10,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 6),
-                Text(roomName,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                        child: _StatBox(
-                            value: '$memberPerGroup',
-                            label: 'Member/\nGroup')),
-                    const SizedBox(width: 12),
-                    Expanded(
-                        child:
-                            _StatBox(value: '$groups', label: 'Groups')),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.cardBg,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.borderColor),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Room Code',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 14),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBlueBg,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.borderColor),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Room code pakai gradient text
-                      ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [Color(0xFF7C9EFF), Color(0xFFB8CDFF)],
-                        ).createShader(bounds),
-                        child: Text(
-                          roomCode,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 3,
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Clipboard.setData(
-                              ClipboardData(text: roomCode));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Code copied!'),
-                              backgroundColor: const Color(0xFF7C9EFF)
-                                  .withValues(alpha: 0.9),
-                              behavior: SnackBarBehavior.floating,
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF7C9EFF).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                                color: const Color(0xFF7C9EFF)
-                                    .withValues(alpha: 0.2)),
-                          ),
-                          child: const Icon(Icons.copy_rounded,
-                              color: Color(0xFF7C9EFF), size: 18),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatBox extends StatelessWidget {
-  final String value, label;
-  const _StatBox({required this.value, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
-      decoration: BoxDecoration(
-        color: AppColors.darkBlueBg,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.borderColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(value,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold)),
-          Text(label,
-              style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.4),
-                  fontSize: 11,
-                  height: 1.4)),
-        ],
       ),
     );
   }

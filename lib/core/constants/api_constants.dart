@@ -12,6 +12,9 @@ class ApiConstants {
   static const String logout = '/api/auth/logout';
   static const String me = '/api/auth/me';
 
+  // Role
+  static const String normalizeRole = '/api/normalize-role';
+
   // Room endpoints
   static const String rooms = '/api/rooms';
   static const String myRooms = '/api/rooms/my-rooms';

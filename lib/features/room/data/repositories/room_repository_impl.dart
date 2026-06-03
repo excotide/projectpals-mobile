@@ -1,4 +1,5 @@
 import '../../domain/entities/member_entity.dart';
+import '../../domain/entities/role_normalization.dart';
 import '../../domain/entities/room_entity.dart';
 import '../../domain/repositories/room_repository.dart';
 import '../datasources/room_remote_data_source.dart';
@@ -6,6 +7,10 @@ import '../datasources/room_remote_data_source.dart';
 class RoomRepositoryImpl implements RoomRepository {
   final RoomRemoteDataSource remoteDataSource;
   RoomRepositoryImpl({required this.remoteDataSource});
+
+  @override
+  Future<RoleNormalization> normalizeRole(String role) =>
+      remoteDataSource.normalizeRole(role);
 
   @override
   Future<RoomEntity> createRoom({
@@ -33,14 +38,16 @@ class RoomRepositoryImpl implements RoomRepository {
   Future<Map<String, dynamic>> joinRoom({
     required String roomCode,
     String? primaryRole,
-    String? backupRole,
+    List<String>? backupRoles,
     List<String>? productivityWindows,
+    List<String>? environments,
   }) {
     return remoteDataSource.joinRoom(
       roomCode: roomCode,
       primaryRole: primaryRole,
-      backupRole: backupRole,
+      backupRoles: backupRoles,
       productivityWindows: productivityWindows,
+      environments: environments,
     );
   }
 

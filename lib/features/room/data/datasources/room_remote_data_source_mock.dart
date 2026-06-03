@@ -1,3 +1,4 @@
+import '../../domain/entities/role_normalization.dart';
 import '../models/member_model.dart';
 import '../models/room_model.dart';
 import 'room_remote_data_source.dart';
@@ -36,6 +37,23 @@ class RoomRemoteDataSourceMock implements RoomRemoteDataSource {
   ];
 
   @override
+  Future<RoleNormalization> normalizeRole(String role) async {
+    await Future.delayed(const Duration(milliseconds: 250));
+    final cleaned = role.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final normalized = cleaned
+        .split(' ')
+        .map((w) => w.isEmpty
+            ? w
+            : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
+        .join(' ');
+    return RoleNormalization(
+      original: role,
+      normalized: normalized,
+      changed: normalized != role.trim(),
+    );
+  }
+
+  @override
   Future<RoomModel> createRoom({
     required String projectTheme,
     required List<String> roles,
@@ -69,8 +87,9 @@ class RoomRemoteDataSourceMock implements RoomRemoteDataSource {
   Future<Map<String, dynamic>> joinRoom({
     required String roomCode,
     String? primaryRole,
-    String? backupRole,
+    List<String>? backupRoles,
     List<String>? productivityWindows,
+    List<String>? environments,
   }) async {
     await Future.delayed(const Duration(milliseconds: 400));
     return {'message': 'Joined successfully', 'room_code': roomCode};

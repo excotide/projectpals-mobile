@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/errors/exceptions.dart';
+import '../../domain/entities/role_normalization.dart';
 import '../models/member_model.dart';
 import '../models/room_model.dart';
 
 abstract class RoomRemoteDataSource {
+  /// Preview normalisasi nama role (read-only) via `/api/normalize-role`.
+  Future<RoleNormalization> normalizeRole(String role);
+
   Future<RoomModel> createRoom({
     required String projectTheme,
     required List<String> roles,
@@ -19,8 +23,9 @@ abstract class RoomRemoteDataSource {
   Future<Map<String, dynamic>> joinRoom({
     required String roomCode,
     String? primaryRole,
-    String? backupRole,
+    List<String>? backupRoles,
     List<String>? productivityWindows,
+    List<String>? environments,
   });
 
   Future<Map<String, dynamic>> getRoomPreview(String roomCode);
@@ -39,6 +44,30 @@ abstract class RoomRemoteDataSource {
 class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
   final Dio dio;
   RoomRemoteDataSourceImpl({required this.dio});
+
+  @override
+  Future<RoleNormalization> normalizeRole(String role) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.normalizeRole,
+        data: {'role': role},
+      );
+      final data = response.data['data'] as Map<String, dynamic>;
+      return RoleNormalization(
+        original: (data['original'] as String?) ?? role,
+        normalized: (data['normalized'] as String?) ?? role,
+        changed: (data['changed'] as bool?) ?? false,
+      );
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      final msg = data is Map
+          ? (data['message'] as String?) ?? 'Failed to normalize role'
+          : 'Connection failed. Check your network.';
+      throw ServerException(message: msg, statusCode: e.response?.statusCode);
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+  }
 
   @override
   Future<RoomModel> createRoom({
@@ -97,16 +126,22 @@ class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
   Future<Map<String, dynamic>> joinRoom({
     required String roomCode,
     String? primaryRole,
-    String? backupRole,
+    List<String>? backupRoles,
     List<String>? productivityWindows,
+    List<String>? environments,
   }) async {
     try {
       final body = <String, dynamic>{'room_code': roomCode};
       if (primaryRole != null) body['primary_role'] = primaryRole;
-      if (backupRole != null) body['backup_role'] = backupRole;
+      if (backupRoles != null && backupRoles.isNotEmpty) {
+        // Kirim array (`backup_roles`) sekaligus single legacy (`backup_role`).
+        body['backup_roles'] = backupRoles;
+        body['backup_role'] = backupRoles.first;
+      }
       if (productivityWindows != null) {
         body['productivity_windows'] = productivityWindows;
       }
+      if (environments != null) body['environments'] = environments;
       final response = await dio.post(ApiConstants.joinRoom, data: body);
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {

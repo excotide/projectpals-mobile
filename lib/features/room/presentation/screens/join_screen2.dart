@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
+import 'room_detail_screen.dart';
 
 class JoinScreen2 extends StatefulWidget {
   final Map<String, dynamic> preview;
   final String roomCode;
 
+  /// Jika diisi (alur "create lalu owner ikut join"), setelah join sukses
+  /// pengguna diarahkan langsung ke halaman detail room ini.
+  final RoomEntity? createdRoom;
+
   const JoinScreen2({
     super.key,
     required this.preview,
     required this.roomCode,
+    this.createdRoom,
   });
 
   @override
@@ -18,7 +25,8 @@ class JoinScreen2 extends StatefulWidget {
 }
 
 class _JoinScreen2State extends State<JoinScreen2> {
-  int _step = 0; // 0 = time window, 1 = role, 2 = success
+  // 0 = time window, 1 = work environment, 2 = role, 3 = success
+  int _step = 0;
 
   final List<String> _timeOptions = [
     'morning',
@@ -28,19 +36,75 @@ class _JoinScreen2State extends State<JoinScreen2> {
   ];
   final List<String> _selectedWindows = [];
 
+  final List<String> _envOptions = [
+    'private',
+    'public',
+    'online',
+    'flexible',
+  ];
+  final List<String> _selectedEnvs = [];
+
+  // Opsi konkret (selain 'flexible') untuk tiap preferensi.
+  static const List<String> _timeConcrete = ['morning', 'afternoon', 'evening'];
+  static const List<String> _envConcrete = ['private', 'public', 'online'];
+
   String? _primaryRole;
-  String? _backupRole;
+  final List<String> _backupRoles = [];
 
   List<String> get _availableRoles =>
       List<String>.from(widget.preview['roles'] ?? []);
+
+  /// Toggle satu preferensi dengan aturan:
+  /// - 'flexible' bersifat eksklusif (mengosongkan pilihan lain).
+  /// - memilih ketiga opsi konkret sekaligus otomatis menjadi 'flexible'.
+  void _togglePreference(
+      List<String> selected, String opt, List<String> concrete) {
+    setState(() {
+      if (opt == 'flexible') {
+        if (selected.contains('flexible')) {
+          selected.clear();
+        } else {
+          selected
+            ..clear()
+            ..add('flexible');
+        }
+        return;
+      }
+      selected.remove('flexible');
+      if (selected.contains(opt)) {
+        selected.remove(opt);
+      } else {
+        selected.add(opt);
+      }
+      // Ketiga opsi konkret terpilih → kolaps menjadi 'flexible'.
+      if (concrete.every(selected.contains)) {
+        selected
+          ..clear()
+          ..add('flexible');
+      }
+    });
+  }
+
+  /// Setelah alur selesai: ke detail room (alur create) atau pop (join biasa).
+  void _onFlowDone() {
+    final room = widget.createdRoom;
+    if (room != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => RoomDetailScreen(room: room)),
+      );
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
 
   void _submitJoin() {
     context.read<RoomBloc>().add(RoomJoinRequested(
           roomCode: widget.roomCode,
           primaryRole: _primaryRole,
-          backupRole: _backupRole,
+          backupRoles: _backupRoles.isEmpty ? null : _backupRoles,
           productivityWindows:
               _selectedWindows.isEmpty ? null : _selectedWindows,
+          environments: _selectedEnvs.isEmpty ? null : _selectedEnvs,
         ));
   }
 
@@ -49,7 +113,7 @@ class _JoinScreen2State extends State<JoinScreen2> {
     return BlocListener<RoomBloc, RoomState>(
       listener: (context, state) {
         if (state is RoomJoined) {
-          setState(() => _step = 2);
+          setState(() => _step = 3);
         } else if (state is RoomFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -98,7 +162,7 @@ class _JoinScreen2State extends State<JoinScreen2> {
         ),
         centerTitle: true,
       );
-    } else if (_step == 1) {
+    } else if (_step == 1 || _step == 2) {
       return AppBar(
         backgroundColor: AppColors.darkBlueBg,
         elevation: 0,
@@ -143,36 +207,58 @@ class _JoinScreen2State extends State<JoinScreen2> {
   Widget _buildStep() {
     switch (_step) {
       case 0:
-        return _TimeWindowStep(
+        return _PreferenceGridStep(
+          title: 'Peak Kinetic Window',
           options: _timeOptions,
+          labels: _PreferenceGridStep.timeLabels,
+          subtitles: _PreferenceGridStep.timeSubtitles,
+          icons: _PreferenceGridStep.timeIcons,
+          infoText:
+              'Matching logic will prioritize users with overlapping windows for better real-time collaboration.',
           selected: _selectedWindows,
-          roomName: widget.preview['project_theme'] ?? '',
-          onToggle: (val) {
-            setState(() {
-              if (_selectedWindows.contains(val)) {
-                _selectedWindows.remove(val);
-              } else if (_selectedWindows.length < 2) {
-                _selectedWindows.add(val);
-              }
-            });
-          },
+          onToggle: (val) =>
+              _togglePreference(_selectedWindows, val, _timeConcrete),
           onNext: () => setState(() => _step = 1),
           onBack: () => Navigator.of(context).maybePop(),
         );
       case 1:
-        return _RoleStep(
-          roles: _availableRoles,
-          primaryRole: _primaryRole,
-          backupRole: _backupRole,
-          onPrimaryChanged: (v) => setState(() => _primaryRole = v),
-          onBackupChanged: (v) => setState(() => _backupRole = v),
-          onSubmit: _submitJoin,
+        return _PreferenceGridStep(
+          title: 'Work Environment',
+          options: _envOptions,
+          labels: _PreferenceGridStep.envLabels,
+          subtitles: _PreferenceGridStep.envSubtitles,
+          icons: _PreferenceGridStep.envIcons,
+          infoText:
+              'We match you with people who prefer a similar working environment.',
+          selected: _selectedEnvs,
+          onToggle: (val) =>
+              _togglePreference(_selectedEnvs, val, _envConcrete),
+          onNext: () => setState(() => _step = 2),
           onBack: () => setState(() => _step = 0),
         );
       case 2:
+        return _RoleStep(
+          roles: _availableRoles,
+          primaryRole: _primaryRole,
+          backupRoles: _backupRoles,
+          onPrimaryChanged: (v) => setState(() {
+            _primaryRole = v;
+            if (v != null) _backupRoles.remove(v);
+          }),
+          onBackupToggle: (role) => setState(() {
+            if (_backupRoles.contains(role)) {
+              _backupRoles.remove(role);
+            } else {
+              _backupRoles.add(role);
+            }
+          }),
+          onSubmit: _submitJoin,
+          onBack: () => setState(() => _step = 1),
+        );
+      case 3:
         return _SuccessStep(
           roomName: widget.preview['project_theme'] ?? '',
-          onDone: () => Navigator.of(context).pop(),
+          onDone: _onFlowDone,
         );
       default:
         return const SizedBox.shrink();
@@ -180,41 +266,67 @@ class _JoinScreen2State extends State<JoinScreen2> {
   }
 }
 
-// ── Time Windows ───────────────────────────────────────────────────────────────
-class _TimeWindowStep extends StatelessWidget {
+// ── Preference Grid (Time Windows / Work Environment) ───────────────────────────
+class _PreferenceGridStep extends StatelessWidget {
+  final String title;
   final List<String> options, selected;
-  final String roomName;
+  final Map<String, String> labels, subtitles;
+  final Map<String, IconData> icons;
+  final String infoText;
   final ValueChanged<String> onToggle;
   final VoidCallback onNext;
   final VoidCallback onBack;
 
-  const _TimeWindowStep({
+  const _PreferenceGridStep({
+    required this.title,
     required this.options,
     required this.selected,
-    required this.roomName,
+    required this.labels,
+    required this.subtitles,
+    required this.icons,
+    required this.infoText,
     required this.onToggle,
     required this.onNext,
     required this.onBack,
   });
 
-  static const Map<String, String> _labels = {
+  // ── Time window config ──
+  static const Map<String, String> timeLabels = {
     'morning': 'Morning',
     'afternoon': 'Afternoon',
     'evening': 'Evening',
     'flexible': 'Flexible',
   };
-
-  static const Map<String, String> _subtitles = {
+  static const Map<String, String> timeSubtitles = {
     'morning': '6AM - 12PM',
     'afternoon': '12PM - 6PM',
     'evening': '6PM - 12AM',
     'flexible': 'Variable',
   };
-
-  static const Map<String, IconData> _icons = {
+  static const Map<String, IconData> timeIcons = {
     'morning': Icons.wb_sunny_outlined,
     'afternoon': Icons.wb_cloudy_outlined,
     'evening': Icons.nights_stay_outlined,
+    'flexible': Icons.all_inclusive_outlined,
+  };
+
+  // ── Work environment config ──
+  static const Map<String, String> envLabels = {
+    'private': 'Private',
+    'public': 'Public',
+    'online': 'Online',
+    'flexible': 'Flexible',
+  };
+  static const Map<String, String> envSubtitles = {
+    'private': 'Tatap muka privat',
+    'public': 'Ruang publik',
+    'online': 'Remote / daring',
+    'flexible': 'Apa saja',
+  };
+  static const Map<String, IconData> envIcons = {
+    'private': Icons.lock_outline,
+    'public': Icons.groups_outlined,
+    'online': Icons.cloud_outlined,
     'flexible': Icons.all_inclusive_outlined,
   };
 
@@ -228,21 +340,34 @@ class _TimeWindowStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Peak Kinetic Window',
-                  style: TextStyle(
+                Text(
+                  title,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Select up to 2 options to sync your deep work sessions.',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.4),
-                    fontSize: 14,
-                    height: 1.5,
+                RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.4),
+                      fontSize: 14,
+                      height: 1.5,
+                    ),
+                    children: const [
+                      TextSpan(
+                          text:
+                              'Pilih hingga 2 preferensi. Pilih ketiganya untuk otomatis jadi '),
+                      TextSpan(
+                        text: 'Flexible',
+                        style: TextStyle(
+                            color: Color(0xFF7C9EFF),
+                            fontWeight: FontWeight.w700),
+                      ),
+                      TextSpan(text: '.'),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -290,7 +415,7 @@ class _TimeWindowStep extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              _icons[opt],
+                              icons[opt],
                               color: isSelected
                                   ? const Color(0xFF0D1B3E)
                                   : Colors.white.withValues(alpha: 0.4),
@@ -298,7 +423,7 @@ class _TimeWindowStep extends StatelessWidget {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              _labels[opt] ?? opt,
+                              labels[opt] ?? opt,
                               style: TextStyle(
                                 color: isSelected
                                     ? const Color(0xFF0D1B3E)
@@ -309,7 +434,7 @@ class _TimeWindowStep extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _subtitles[opt] ?? '',
+                              subtitles[opt] ?? '',
                               style: TextStyle(
                                 color: isSelected
                                     ? const Color(0xFF0D1B3E).withValues(alpha: 0.65)
@@ -339,7 +464,7 @@ class _TimeWindowStep extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Matching logic will prioritize users with overlapping windows for better real-time collaboration.',
+                          infoText,
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.4),
                             fontSize: 12,
@@ -432,8 +557,10 @@ class _TimeWindowStep extends StatelessWidget {
 // ── Role Selection ─────────────────────────────────────────────────────────────
 class _RoleStep extends StatelessWidget {
   final List<String> roles;
-  final String? primaryRole, backupRole;
-  final ValueChanged<String?> onPrimaryChanged, onBackupChanged;
+  final String? primaryRole;
+  final List<String> backupRoles;
+  final ValueChanged<String?> onPrimaryChanged;
+  final ValueChanged<String> onBackupToggle;
   final VoidCallback onSubmit;
   final VoidCallback onBack;
 
@@ -462,9 +589,9 @@ class _RoleStep extends StatelessWidget {
   const _RoleStep({
     required this.roles,
     required this.primaryRole,
-    required this.backupRole,
+    required this.backupRoles,
     required this.onPrimaryChanged,
-    required this.onBackupChanged,
+    required this.onBackupToggle,
     required this.onSubmit,
     required this.onBack,
   });
@@ -480,7 +607,7 @@ class _RoleStep extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'You must choose one main role and a backup role.',
+                  'Pilih satu primary role dan boleh lebih dari satu backup role.',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 14,
@@ -491,7 +618,7 @@ class _RoleStep extends StatelessWidget {
                 // ── Role cards ──
                 ...roles.map((role) {
                   final isPrimary = primaryRole == role;
-                  final isBackup = backupRole == role;
+                  final isBackup = backupRoles.contains(role);
                   final icon = _roleIcons[role] ?? Icons.person_outline;
                   final subtitle = _roleSubtitles[role] ?? '';
 
@@ -637,7 +764,7 @@ class _RoleStep extends StatelessWidget {
                                 child: GestureDetector(
                                   onTap: () {
                                     if (role == primaryRole) return;
-                                    onBackupChanged(isBackup ? null : role);
+                                    onBackupToggle(role);
                                   },
                                   child: AnimatedContainer(
                                     duration: const Duration(milliseconds: 180),

@@ -1,7 +1,10 @@
 import '../entities/member_entity.dart';
+import '../entities/role_normalization.dart';
 import '../entities/room_entity.dart';
 
 abstract class RoomRepository {
+  Future<RoleNormalization> normalizeRole(String role);
+
   Future<RoomEntity> createRoom({
     required String projectTheme,
     required List<String> roles,
@@ -16,8 +19,9 @@ abstract class RoomRepository {
   Future<Map<String, dynamic>> joinRoom({
     required String roomCode,
     String? primaryRole,
-    String? backupRole,
+    List<String>? backupRoles,
     List<String>? productivityWindows,
+    List<String>? environments,
   });
 
   Future<Map<String, dynamic>> getRoomPreview(String roomCode);

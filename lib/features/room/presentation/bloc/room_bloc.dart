@@ -105,8 +105,9 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
       final result = await joinRoomUseCase(
         roomCode: event.roomCode,
         primaryRole: event.primaryRole,
-        backupRole: event.backupRole,
+        backupRoles: event.backupRoles,
         productivityWindows: event.productivityWindows,
+        environments: event.environments,
       );
       emit(RoomJoined(result));
     } on ServerException catch (e) {

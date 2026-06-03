@@ -29,10 +29,12 @@ import 'features/room/domain/usecases/get_room_members_usecase.dart';
 import 'features/room/domain/usecases/get_room_preview_usecase.dart';
 import 'features/room/domain/usecases/join_room_usecase.dart';
 import 'features/room/domain/usecases/leave_room_usecase.dart';
+import 'features/room/domain/usecases/normalize_role_usecase.dart';
 import 'features/room/domain/usecases/update_room_usecase.dart';
 
 // Room — bloc
 import 'features/room/presentation/bloc/room_bloc.dart';
+import 'features/room/presentation/bloc/role_normalizer_cubit.dart';
 
 // Screens
 import 'features/splash/splash_screen.dart';
@@ -82,6 +84,10 @@ class ProjectPalsApp extends StatelessWidget {
             leaveRoomUseCase: LeaveRoomUseCase(roomRepo),
             getRoomMembersUseCase: GetRoomMembersUseCase(roomRepo),
           ),
+        ),
+        BlocProvider(
+          create: (_) =>
+              RoleNormalizerCubit(NormalizeRoleUseCase(roomRepo)),
         ),
       ],
       child: MaterialApp(
