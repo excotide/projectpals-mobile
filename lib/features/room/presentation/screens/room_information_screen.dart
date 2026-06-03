@@ -1,5 +1,4 @@
 // ── room_information_screen.dart ──────────────────────────────────────────────
-// PERUBAHAN: Button EDIT di _RoomInfoCard sekarang bisa diklik → navigasi ke RoomEditScreen
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +7,7 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/member_entity.dart';
 import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
-import 'room_edit_screen.dart'; // ← import screen baru
+import 'room_edit_screen.dart';
 
 /// Format daftar preferensi (productivity windows / environments) untuk tampilan.
 /// Mengubah `["morning","flexible"]` → `"Morning, Flexible"`; kosong → `"Flexible"`.
@@ -35,10 +34,9 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
   final _searchController = TextEditingController();
   bool _showSearch = false;
 
-  static const Color _bg = Color(0xFF0D1117);
-  static const Color _cardBg = Color(0xFF141D2E);
-  static const Color _accent = Color(0xFF7C9EFF);
-  static const Color _border = Color(0x14FFFFFF);
+  // ── BG sama dengan ProfileScreen ──
+  static Color get _bgColor => AppColors.darkBlueBg;
+  static const Color _accent      = Color(0xFF7C9EFF);
 
   bool get _isOwner {
     final s = context.read<AuthBloc>().state;
@@ -83,7 +81,8 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: _bg,
+        // ── BG sama dengan ProfileScreen ──
+        backgroundColor: _bgColor,
         body: SafeArea(
           child: Column(
             children: [
@@ -98,7 +97,6 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
                         room: _room,
                         isOwner: _isOwner,
                         onEditTap: () {
-                          // ── Navigasi ke RoomEditScreen ──
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -186,9 +184,10 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: _cardBg,
+              // ── card bg sama dengan ProfileScreen ──
+              color: AppColors.cardBg,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: _border),
+              border: Border.all(color: AppColors.borderColor),
             ),
             child: Icon(
               _showSearch ? Icons.close : Icons.search,
@@ -202,9 +201,9 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: _cardBg,
+            color: AppColors.cardBg,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: _border),
+            border: Border.all(color: AppColors.borderColor),
           ),
           child: Icon(Icons.tune_rounded,
               color: Colors.white.withValues(alpha: 0.5), size: 16),
@@ -217,9 +216,9 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
     return Container(
       height: 44,
       decoration: BoxDecoration(
-        color: _cardBg,
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _border),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: TextField(
         controller: _searchController,
@@ -366,7 +365,7 @@ class _RoomInformationScreenState extends State<RoomInformationScreen> {
 class _RoomInfoCard extends StatelessWidget {
   final RoomEntity room;
   final bool isOwner;
-  final VoidCallback onEditTap; // ← tambahan callback
+  final VoidCallback onEditTap;
 
   const _RoomInfoCard({
     required this.room,
@@ -374,16 +373,14 @@ class _RoomInfoCard extends StatelessWidget {
     required this.onEditTap,
   });
 
-  static const Color _cardBg = Color(0xFF141D2E);
-  static const Color _border = Color(0x14FFFFFF);
-
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _cardBg,
+        // ── card bg sama dengan ProfileScreen ──
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _border),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         children: [
@@ -391,14 +388,15 @@ class _RoomInfoCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Row(
               children: [
+                // ── Icon info — bg biru muda ──
                 Container(
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF7C9EFF).withValues(alpha: 0.12),
+                    color: const Color(0xFF7C9EFF).withValues(alpha: 0.22),
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: const Color(0xFF7C9EFF).withValues(alpha: 0.3)),
+                        color: const Color(0xFF7C9EFF).withValues(alpha: 0.5)),
                   ),
                   child: const Icon(Icons.info_outline_rounded,
                       color: Color(0xFF7C9EFF), size: 14),
@@ -420,7 +418,6 @@ class _RoomInfoCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                // ── EDIT button — sekarang bisa diklik ──
                 GestureDetector(
                   onTap: onEditTap,
                   child: Container(
@@ -701,9 +698,10 @@ class _MemberCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF141D2E),
+        // ── card bg sama dengan ProfileScreen ──
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Row(
         children: [
@@ -736,8 +734,8 @@ class _MemberCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: const Color(0xFF4ADE80),
                     shape: BoxShape.circle,
-                    border: Border.all(
-                        color: const Color(0xFF141D2E), width: 2),
+                    // ── border ikut cardBg biar seamless ──
+                    border: Border.all(color: AppColors.cardBg, width: 2),
                   ),
                 ),
               ),

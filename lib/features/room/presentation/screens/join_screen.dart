@@ -59,18 +59,30 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
         }
       },
       child: Scaffold(
+        // BG halaman — sama dengan ProfileScreen
         backgroundColor: AppColors.darkBlueBg,
         appBar: AppBar(
-          backgroundColor: AppColors.primaryCyan,
+          // AppBar — gradient biru palette baru
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF4B6EF5), Color(0xFF7C9EFF)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
+          backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.black, size: 22),
+            icon: const Icon(Icons.close,
+                color: Color(0xFF0D1B3E), size: 22),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           title: const Text(
             'Join Room',
             style: TextStyle(
-              color: Colors.black,
+              color: Color(0xFF0D1B3E),
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -86,11 +98,17 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
   }
 }
 
-// ── Enter Code ─────────────────────────────────────────────────────────────────
+// ── Enter Code Step ────────────────────────────────────────────────────────────
 class _EnterCodeStep extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onValidate;
-  const _EnterCodeStep({required this.controller, required this.onValidate});
+
+  static const Color _accent        = Color(0xFF7C9EFF);
+  static const Color _accentLight   = Color(0xFFB8CDFF);
+  static const Color _accentVibrant = Color(0xFF5B7FFF);
+
+  const _EnterCodeStep(
+      {required this.controller, required this.onValidate});
 
   @override
   Widget build(BuildContext context) {
@@ -98,16 +116,16 @@ class _EnterCodeStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ── Hero Section ──
+          // ── Hero Section ─────────────────────────────────────────
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 48, 24, 40),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF0A1628),
+                  const Color(0xFF0A1628),
                   AppColors.darkBlueBg,
                 ],
               ),
@@ -115,7 +133,7 @@ class _EnterCodeStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Badge label
+                // Badge label — pakai gradient biru baru
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 7),
@@ -123,14 +141,14 @@ class _EnterCodeStep extends StatelessWidget {
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: AppColors.primaryCyan.withValues(alpha: 0.6),
+                      color: _accent.withValues(alpha: 0.55),
                       width: 1,
                     ),
                   ),
                   child: const Text(
                     'FIND YOUR GROUP',
                     style: TextStyle(
-                      color: AppColors.primaryCyan,
+                      color: _accent,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 1.5,
@@ -138,6 +156,7 @@ class _EnterCodeStep extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
+
                 // Hero title
                 const Text(
                   'Find your people.',
@@ -149,22 +168,30 @@ class _EnterCodeStep extends StatelessWidget {
                     height: 1.15,
                   ),
                 ),
-                const Text(
-                  'Build your project.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: AppColors.primaryCyan,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    height: 1.15,
+                // Subtitle — gradient teks
+                ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [_accent, _accentLight],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ).createShader(bounds),
+                  child: const Text(
+                    'Build your project.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      height: 1.15,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Connect with developers and designers\nglobally to bring your vision to life.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: AppColors.textGrey,
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 14,
                     height: 1.6,
                   ),
@@ -173,9 +200,10 @@ class _EnterCodeStep extends StatelessWidget {
             ),
           ),
 
-          // ── Input Section ──
+          // ── Input Section ─────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
             child: Column(
               children: [
                 // Code input field
@@ -189,16 +217,16 @@ class _EnterCodeStep extends StatelessWidget {
                   ),
                   decoration: InputDecoration(
                     hintText: 'Enter Unique Room Code',
-                    hintStyle: const TextStyle(
-                      color: Colors.white38,
+                    hintStyle: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.25),
                       fontSize: 14,
                       letterSpacing: 0,
                     ),
-                    prefixIcon: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Icon(
                         Icons.vpn_key_outlined,
-                        color: AppColors.primaryCyan,
+                        color: _accent.withValues(alpha: 0.7),
                         size: 20,
                       ),
                     ),
@@ -207,67 +235,81 @@ class _EnterCodeStep extends StatelessWidget {
                       minHeight: 50,
                     ),
                     filled: true,
-                    fillColor: AppColors.inputBg,
+                    // BG card — sama dengan ProfileScreen
+                    fillColor: AppColors.cardBg,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 18),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
+                      // Border — sama dengan ProfileScreen
                       borderSide:
-                          const BorderSide(color: AppColors.borderColor),
+                          BorderSide(color: AppColors.borderColor),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide:
-                          const BorderSide(color: AppColors.primaryCyan),
+                      borderSide: BorderSide(
+                          color: _accent.withValues(alpha: 0.6), width: 1.5),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // JOIN ROOM button
+                // JOIN ROOM button — gradient biru palette baru
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: BlocBuilder<RoomBloc, RoomState>(
                     builder: (context, state) {
                       final isLoading = state is RoomLoading;
-                      return ElevatedButton(
-                        onPressed: isLoading ? null : onValidate,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryCyan,
-                          disabledBackgroundColor:
-                              AppColors.primaryCyan.withValues(alpha: 0.4),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28)),
-                          elevation: 0,
-                        ),
-                        child: isLoading
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: Color(0xFF003642)),
-                              )
-                            : const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'JOIN ROOM',
-                                    style: TextStyle(
-                                      color: Color(0xFF003642),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.2,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    color: Color(0xFF003642),
-                                    size: 18,
-                                  ),
-                                ],
+                      return GestureDetector(
+                        onTap: isLoading ? null : onValidate,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [_accent, _accentLight],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: _accentVibrant.withValues(alpha: 0.35),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
                               ),
+                            ],
+                          ),
+                          child: isLoading
+                              ? const Center(
+                                  child: SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Color(0xFF0D1B3E)),
+                                  ),
+                                )
+                              : const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'JOIN ROOM',
+                                      style: TextStyle(
+                                        color: Color(0xFF0D1B3E),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Icon(
+                                      Icons.arrow_forward_rounded,
+                                      color: Color(0xFF0D1B3E),
+                                      size: 18,
+                                    ),
+                                  ],
+                                ),
+                        ),
                       );
                     },
                   ),

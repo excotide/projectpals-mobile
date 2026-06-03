@@ -78,22 +78,35 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       child: Scaffold(
         backgroundColor: AppColors.darkBlueBg,
         appBar: AppBar(
-          backgroundColor: AppColors.primaryCyan,
+          backgroundColor: Colors.transparent,
           elevation: 0,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
           leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.black87),
+            icon: const Icon(Icons.close, color: Color(0xFF0D1B3E)),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
-          title: const Text('Create Room',
-              style: TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18)),
+          title: const Text(
+            'Create Room',
+            style: TextStyle(
+              color: Color(0xFF0D1B3E),
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
         ),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Column(
             children: [
+              // ── Progress bar ──
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 24, vertical: 20),
@@ -103,15 +116,22 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(_stepLabel,
-                            style: const TextStyle(
-                                color: AppColors.primaryCyan,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.5)),
-                        Text(_progressLabel,
-                            style: const TextStyle(
-                                color: AppColors.textGrey, fontSize: 12)),
+                        Text(
+                          _stepLabel,
+                          style: const TextStyle(
+                            color: Color(0xFF7C9EFF),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        Text(
+                          _progressLabel,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.4),
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -121,7 +141,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                         value: _progress,
                         backgroundColor: AppColors.borderColor,
                         valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppColors.primaryCyan),
+                            Color(0xFF7C9EFF)),
                         minHeight: 4,
                       ),
                     ),
@@ -157,7 +177,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
             bottom: MediaQuery.of(context).padding.bottom + 16,
             top: 16,
           ),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.darkBlueBg,
             border: Border(top: BorderSide(color: AppColors.borderColor)),
           ),
@@ -165,14 +185,16 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
             children: [
               GestureDetector(
                 onTap: _back,
-                child: const Column(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.chevron_left,
-                        color: AppColors.textGrey, size: 20),
-                    Text('Back',
-                        style: TextStyle(
-                            color: AppColors.textGrey, fontSize: 12)),
+                        color: Colors.white.withValues(alpha: 0.4), size: 20),
+                    Text(
+                      'Back',
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
+                    ),
                   ],
                 ),
               ),
@@ -187,45 +209,64 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                       onPressed:
                           (_canNext && state is! RoomLoading) ? _next : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryCyan,
-                        foregroundColor: Colors.black87,
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
                         disabledBackgroundColor:
-                            AppColors.primaryCyan.withValues(alpha: 0.3),
+                            const Color(0xFF3B5FD9).withValues(alpha: 0.3),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30)),
-                        padding: const EdgeInsets.symmetric(horizontal: 28),
+                        padding: EdgeInsets.zero,
                         elevation: 0,
                       ),
-                      child: isLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.darkBlueBg),
-                              ),
-                            )
-                          : Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  _currentStep == _totalSteps - 1
-                                      ? 'Create Room'
-                                      : 'Next',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15),
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          gradient: (_canNext && state is! RoomLoading)
+                              ? const LinearGradient(
+                                  colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                )
+                              : null,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 28),
+                          alignment: Alignment.center,
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Color(0xFF0D1B3E)),
+                                  ),
+                                )
+                              : Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      _currentStep == _totalSteps - 1
+                                          ? 'Create Room'
+                                          : 'Next',
+                                      style: const TextStyle(
+                                        color: Color(0xFF0D1B3E),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Icon(
+                                      _currentStep == _totalSteps - 1
+                                          ? Icons.rocket_launch_rounded
+                                          : Icons.arrow_forward_rounded,
+                                      size: 18,
+                                      color: const Color(0xFF0D1B3E),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 6),
-                                Icon(
-                                  _currentStep == _totalSteps - 1
-                                      ? Icons.rocket_launch_rounded
-                                      : Icons.arrow_forward_rounded,
-                                  size: 18,
-                                ),
-                              ],
-                            ),
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -296,7 +337,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   }
 }
 
-// ── Step widgets (same UI as before) ──────────────────────────────────────────
+// ── Step widgets ───────────────────────────────────────────────────────────────
 
 class _StepDefineCorePulse extends StatelessWidget {
   final TextEditingController controller;
@@ -311,23 +352,37 @@ class _StepDefineCorePulse extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Define the Core Pulse',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
           const Text(
-              'Establish the fundamental frequency of your project.',
-              style: TextStyle(
-                  color: AppColors.textGrey, fontSize: 14, height: 1.5)),
+            'Define the Core Pulse',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Establish the fundamental frequency of your project.',
+            style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.4),
+                fontSize: 14,
+                height: 1.5),
+          ),
           const SizedBox(height: 32),
-          const Text('ROOM NAME',
+          // ROOM NAME label dengan warna accent
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [Color(0xFF7C9EFF), Color(0xFFB8CDFF)],
+            ).createShader(bounds),
+            child: const Text(
+              'ROOM NAME',
               style: TextStyle(
-                  color: AppColors.primaryCyan,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.5)),
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
           const SizedBox(height: 10),
           _InputField(
               controller: controller, hint: 'Required', onChanged: onChanged),
@@ -362,22 +417,36 @@ class _StepRoleDefinition extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Role Definition',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold)),
+          const Text(
+            'Role Definition',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 10),
-          const Text('Define core technical roles for your project.',
-              style: TextStyle(
-                  color: AppColors.textGrey, fontSize: 14, height: 1.5)),
+          Text(
+            'Define core technical roles for your project.',
+            style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.4),
+                fontSize: 14,
+                height: 1.5),
+          ),
           const SizedBox(height: 32),
-          const Text('NEW ROLE TITLE',
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [Color(0xFF7C9EFF), Color(0xFFB8CDFF)],
+            ).createShader(bounds),
+            child: const Text(
+              'NEW ROLE TITLE',
               style: TextStyle(
-                  color: AppColors.primaryCyan,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.5)),
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -395,9 +464,15 @@ class _StepRoleDefinition extends StatelessWidget {
                   width: 48,
                   height: 54,
                   decoration: BoxDecoration(
-                      color: AppColors.primaryCyan,
-                      borderRadius: BorderRadius.circular(12)),
-                  child: const Icon(Icons.add, color: Colors.black87, size: 22),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.add,
+                      color: Color(0xFF0D1B3E), size: 22),
                 ),
               ),
             ],
@@ -409,18 +484,22 @@ class _StepRoleDefinition extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: AppColors.inputBg,
+                color: AppColors.cardBg,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.borderColor),
               ),
               child: Row(
                 children: [
                   Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                          color: AppColors.primaryCyan,
-                          shape: BoxShape.circle)),
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF7C9EFF), Color(0xFF4B6EF5)],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                       child: Text(roles[i],
@@ -431,8 +510,8 @@ class _StepRoleDefinition extends StatelessWidget {
                       roles.removeAt(i);
                       onRolesChanged();
                     },
-                    child: const Icon(Icons.delete_outline,
-                        color: AppColors.textGrey, size: 18),
+                    child: Icon(Icons.delete_outline,
+                        color: Colors.white.withValues(alpha: 0.3), size: 18),
                   ),
                 ],
               ),
@@ -460,22 +539,36 @@ class _StepFinalize extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Finalize',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold)),
+          const Text(
+            'Finalize',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 10),
-          const Text('Set group limits before launching the room.',
-              style: TextStyle(
-                  color: AppColors.textGrey, fontSize: 14, height: 1.5)),
+          Text(
+            'Set group limits before launching the room.',
+            style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.4),
+                fontSize: 14,
+                height: 1.5),
+          ),
           const SizedBox(height: 32),
-          const Text('CAPACITY PARAMETERS',
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [Color(0xFF7C9EFF), Color(0xFFB8CDFF)],
+            ).createShader(bounds),
+            child: const Text(
+              'CAPACITY PARAMETERS',
               style: TextStyle(
-                  color: AppColors.primaryCyan,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.5)),
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ),
           const SizedBox(height: 14),
           _CounterCard(
               label: 'Max People Per Group',
@@ -533,8 +626,9 @@ class _CounterCard extends StatelessWidget {
                           fontSize: 14,
                           fontWeight: FontWeight.w600)),
                   Text(sublabel,
-                      style: const TextStyle(
-                          color: AppColors.textGrey, fontSize: 11)),
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.4),
+                          fontSize: 11)),
                 ]),
           ),
           Row(
@@ -581,15 +675,15 @@ class _CircleBtn extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(
             color: enabled
-                ? AppColors.primaryCyan.withValues(alpha: 0.6)
-                : AppColors.primaryCyan.withValues(alpha: 0.2),
+                ? const Color(0xFF7C9EFF).withValues(alpha: 0.6)
+                : const Color(0xFF7C9EFF).withValues(alpha: 0.2),
           ),
         ),
         child: Icon(icon,
             size: 16,
             color: enabled
-                ? AppColors.primaryCyan
-                : AppColors.primaryCyan.withValues(alpha: 0.3)),
+                ? const Color(0xFF7C9EFF)
+                : const Color(0xFF7C9EFF).withValues(alpha: 0.3)),
       ),
     );
   }
@@ -629,11 +723,12 @@ class _InputFieldState extends State<_InputField> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.inputBg,
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color:
-              _focus.hasFocus ? AppColors.primaryCyan : AppColors.borderColor,
+          color: _focus.hasFocus
+              ? const Color(0xFF7C9EFF)
+              : AppColors.borderColor,
           width: _focus.hasFocus ? 1.5 : 1,
         ),
       ),
@@ -645,8 +740,7 @@ class _InputFieldState extends State<_InputField> {
         onSubmitted: widget.onSubmitted,
         decoration: InputDecoration(
           hintText: widget.hint,
-          hintStyle:
-              TextStyle(color: AppColors.textGrey.withValues(alpha: 0.4)),
+          hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.25)),
           border: InputBorder.none,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -693,7 +787,8 @@ class _SuccessDialogState extends State<_SuccessDialog>
       child: Container(
         decoration: BoxDecoration(
             color: AppColors.darkBlueBg,
-            borderRadius: BorderRadius.circular(24)),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.borderColor)),
         padding:
             const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
         child: Column(
@@ -708,10 +803,10 @@ class _SuccessDialogState extends State<_SuccessDialog>
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.black,
+                    color: AppColors.cardBg,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.mintGreen
+                        color: const Color(0xFF4ADE80)
                             .withValues(alpha: 0.5 * _glow.value),
                         blurRadius: 30,
                         spreadRadius: 8,
@@ -719,16 +814,18 @@ class _SuccessDialogState extends State<_SuccessDialog>
                     ],
                   ),
                   child: const Icon(Icons.check_rounded,
-                      color: AppColors.mintGreen, size: 40),
+                      color: Color(0xFF4ADE80), size: 40),
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            const Text('Room Created!',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold)),
+            const Text(
+              'Room Created!',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
@@ -736,19 +833,35 @@ class _SuccessDialogState extends State<_SuccessDialog>
               child: ElevatedButton(
                 onPressed: widget.onOk,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      AppColors.mintGreen.withValues(alpha: 0.15),
-                  foregroundColor: AppColors.mintGreen,
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                        color: AppColors.mintGreen.withValues(alpha: 0.3)),
                   ),
                   elevation: 0,
+                  padding: EdgeInsets.zero,
                 ),
-                child: const Text('View Room Info',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15)),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFB8CDFF), Color(0xFF3B5FD9)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'View Room Info',
+                      style: TextStyle(
+                        color: Color(0xFF0D1B3E),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -800,21 +913,26 @@ class _RoomInfoSheet extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Room Created',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold)),
+                    Text(
+                      'Room Created',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold),
+                    ),
                     SizedBox(height: 4),
-                    Text('Share the code with your friends',
-                        style: TextStyle(
-                            color: AppColors.textGrey, fontSize: 13)),
+                    Text(
+                      'Share the code with your friends',
+                      style: TextStyle(
+                          color: AppColors.textGrey, fontSize: 13),
+                    ),
                   ],
                 ),
               ),
               GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
-                child: const Icon(Icons.close, color: AppColors.textGrey),
+                child: Icon(Icons.close,
+                    color: Colors.white.withValues(alpha: 0.4)),
               ),
             ],
           ),
@@ -829,12 +947,14 @@ class _RoomInfoSheet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('ROOM NAME',
-                    style: TextStyle(
-                        color: AppColors.textGrey,
-                        fontSize: 10,
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.w600)),
+                Text(
+                  'ROOM NAME',
+                  style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.4),
+                      fontSize: 10,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 6),
                 Text(roomName,
                     style: const TextStyle(
@@ -845,11 +965,13 @@ class _RoomInfoSheet extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                        child:
-                            _StatBox(value: '$memberPerGroup', label: 'Member/\nGroup')),
+                        child: _StatBox(
+                            value: '$memberPerGroup',
+                            label: 'Member/\nGroup')),
                     const SizedBox(width: 12),
                     Expanded(
-                        child: _StatBox(value: '$groups', label: 'Groups')),
+                        child:
+                            _StatBox(value: '$groups', label: 'Groups')),
                   ],
                 ),
               ],
@@ -866,11 +988,13 @@ class _RoomInfoSheet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Room Code',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
+                const Text(
+                  'Room Code',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -883,20 +1007,29 @@ class _RoomInfoSheet extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(roomCode,
+                      // Room code pakai gradient text
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Color(0xFF7C9EFF), Color(0xFFB8CDFF)],
+                        ).createShader(bounds),
+                        child: Text(
+                          roomCode,
                           style: const TextStyle(
-                            color: AppColors.primaryCyan,
+                            color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 3,
-                          )),
+                          ),
+                        ),
+                      ),
                       GestureDetector(
                         onTap: () {
-                          Clipboard.setData(ClipboardData(text: roomCode));
+                          Clipboard.setData(
+                              ClipboardData(text: roomCode));
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: const Text('Code copied!'),
-                              backgroundColor: AppColors.primaryCyan
+                              backgroundColor: const Color(0xFF7C9EFF)
                                   .withValues(alpha: 0.9),
                               behavior: SnackBarBehavior.floating,
                               duration: const Duration(seconds: 2),
@@ -906,15 +1039,14 @@ class _RoomInfoSheet extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryCyan
-                                .withValues(alpha: 0.1),
+                            color: const Color(0xFF7C9EFF).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                                color: AppColors.primaryCyan
+                                color: const Color(0xFF7C9EFF)
                                     .withValues(alpha: 0.2)),
                           ),
                           child: const Icon(Icons.copy_rounded,
-                              color: AppColors.primaryCyan, size: 18),
+                              color: Color(0xFF7C9EFF), size: 18),
                         ),
                       ),
                     ],
@@ -951,8 +1083,10 @@ class _StatBox extends StatelessWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.bold)),
           Text(label,
-              style: const TextStyle(
-                  color: AppColors.textGrey, fontSize: 11, height: 1.4)),
+              style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.4),
+                  fontSize: 11,
+                  height: 1.4)),
         ],
       ),
     );

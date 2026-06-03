@@ -1,11 +1,12 @@
-// ── _screen.dart ───────────────────────────────────────────────────
-// Letakkan di: lib/features/room/presentation/screens/_screen.dart
+// ── team_dashboard_screen.dart ───────────────────────────────────────────────
+// Letakkan di: lib/features/room/presentation/screens/team_dashboard_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../domain/entities/room_entity.dart';
 
-// ─── Dummy models (sesuaikan dengan domain kamu) ──────────────────────────────
+// ─── Dummy models ─────────────────────────────────────────────────────────────
 
 class TeamMember {
   final String id;
@@ -56,26 +57,18 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
   int _selectedTeamIndex = 0;
 
   // ── Palette ──
-  static const Color _bg = Color(0xFF0D1117);
-  static const Color _cardBg = Color(0xFF141D2E);
-  static const Color _surface = Color(0xFF1A2035);
-  static const Color _navyBg = Color(0xFF1E2640);
-  static const Color _accent = Color(0xFF7C9EFF);
+  // BG halaman — sama dengan ProfileScreen
+  static Color get _bgColor => AppColors.darkBlueBg;
+
+  // ── Palette lainnya tetap ──
+  static const Color _surface     = Color(0xFF1A2035);
+  static const Color _navyBg      = Color(0xFF1E2640);
+  static const Color _accent      = Color(0xFF7C9EFF);
   static const Color _accentLight = Color(0xFFB8CDFF);
-  static const Color _accentBlue = Color(0xFF4B6EF5);
-  static const Color _green = Color(0xFF4ADE80);
-  static const Color _yellow = Color(0xFFFBBF24);
+  static const Color _accentBlue  = Color(0xFF4B6EF5);
+  static const Color _green       = Color(0xFF4ADE80);
+  static const Color _yellow      = Color(0xFFFBBF24);
 
-  // Team tab color palette — bergantian
-  static const List<Color> _teamTabColors = [
-    Color(0xFF3B4FD9),
-    Color(0xFF2D9B6F),
-    Color(0xFF8B5CF6),
-    Color(0xFF5B7FFF),
-    Color(0xFF8AAEFF),
-  ];
-
-  // ── Dummy data (ganti dengan data real dari BLoC) ──
   late List<TeamModel> _teams;
 
   @override
@@ -85,7 +78,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
   }
 
   List<TeamModel> _buildDummyTeams() {
-    // Buat teams sesuai jumlah numberOfGroups dari room
     final count = widget.room.numberOfGroups.clamp(1, 10);
     return List.generate(
       count,
@@ -95,7 +87,10 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
         members: i == 0
             ? [
                 const TeamMember(
-                    id: '46', name: 'Dev User 46', role: 'AF-Designer', isOwner: true),
+                    id: '46',
+                    name: 'Dev User 46',
+                    role: 'AF-Designer',
+                    isOwner: true),
                 const TeamMember(
                     id: '47', name: 'test user', role: 'FE-Developer'),
                 const TeamMember(
@@ -127,13 +122,11 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
         _ => status,
       };
 
-  Color _tabColor(int index) =>
-      _teamTabColors[index % _teamTabColors.length];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
+      // ── BG sama dengan ProfileScreen ──
+      backgroundColor: _bgColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -166,11 +159,11 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
 
   Widget _buildTopBar() {
     return Container(
-      color: _bg,
+      // ── BG sama dengan ProfileScreen ──
+      color: _bgColor,
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
       child: Row(
         children: [
-          // Back button
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
@@ -189,7 +182,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             ),
           ),
           const SizedBox(width: 10),
-          // Brand
           ShaderMask(
             shaderCallback: (b) => const LinearGradient(
               colors: [_accent, _accentLight],
@@ -216,7 +208,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             ),
           ),
           const Spacer(),
-          // Search
           Container(
             width: 34,
             height: 34,
@@ -232,7 +223,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          // Avatar
           Container(
             width: 34,
             height: 34,
@@ -268,7 +258,8 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
 
   Widget _buildTeamTabs() {
     return Container(
-      color: _bg,
+      // ── BG sama dengan ProfileScreen ──
+      color: _bgColor,
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,30 +279,43 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
           Row(
             children: List.generate(_teams.length, (i) {
               final selected = _selectedTeamIndex == i;
-              final color = _tabColor(i);
               return Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(right: i < _teams.length - 1 ? 8 : 0),
+                  padding: EdgeInsets.only(
+                      right: i < _teams.length - 1 ? 8 : 0),
                   child: GestureDetector(
-                    onTap: () => setState(() => _selectedTeamIndex = i),
+                    onTap: () =>
+                        setState(() => _selectedTeamIndex = i),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
                       padding: const EdgeInsets.symmetric(vertical: 9),
                       decoration: BoxDecoration(
-                        color: selected ? color : _surface,
+                        // ── Selected: gradient biru, unselected: surface ──
+                        gradient: selected
+                            ? const LinearGradient(
+                                colors: [
+                                  Color(0xFFB8CDFF),
+                                  Color(0xFF3B5FD9),
+                                ],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              )
+                            : null,
+                        color: selected ? null : _surface,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: selected
-                              ? color.withValues(alpha: 0.6)
+                              ? Colors.transparent
                               : Colors.white.withValues(alpha: 0.08),
                         ),
                         boxShadow: selected
                             ? [
                                 BoxShadow(
-                                  color: color.withValues(alpha: 0.35),
+                                  color: const Color(0xFF3B5FD9)
+                                      .withValues(alpha: 0.35),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
-                                )
+                                ),
                               ]
                             : null,
                       ),
@@ -319,8 +323,9 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                         child: Text(
                           _teams[i].name,
                           style: TextStyle(
+                            // teks gelap saat selected agar kontras
                             color: selected
-                                ? Colors.white
+                                ? const Color(0xFF0D1B3E)
                                 : Colors.white.withValues(alpha: 0.5),
                             fontSize: 12,
                             fontWeight: selected
@@ -351,14 +356,14 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: _cardBg,
+        // ── BG card sama dengan ProfileScreen ──
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Room label
           Text(
             'ROOM: ${room.projectTheme.toUpperCase()}',
             style: TextStyle(
@@ -369,7 +374,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             ),
           ),
           const SizedBox(height: 6),
-          // Project name + status badge
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -423,7 +427,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // Room code + environment row
           Row(
             children: [
               Expanded(
@@ -466,7 +469,8 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                           const SizedBox(width: 4),
                           Icon(
                             Icons.copy_rounded,
-                            color: const Color(0xFF7C9EFF).withValues(alpha: 0.6),
+                            color:
+                                const Color(0xFF7C9EFF).withValues(alpha: 0.6),
                             size: 11,
                           ),
                         ],
@@ -503,7 +507,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // Roles / Availability
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -529,8 +532,8 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                         color: const Color(0xFF7C9EFF).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                            color:
-                                const Color(0xFF7C9EFF).withValues(alpha: 0.2)),
+                            color: const Color(0xFF7C9EFF)
+                                .withValues(alpha: 0.2)),
                       ),
                       child: Text(
                         role.length > 4
@@ -602,9 +605,10 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: _cardBg,
+        // ── BG card sama dengan ProfileScreen ──
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -684,9 +688,10 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: _cardBg,
+              // ── BG card sama dengan ProfileScreen ──
+              color: AppColors.cardBg,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+              border: Border.all(color: AppColors.borderColor),
             ),
             child: Center(
               child: Text(
@@ -705,7 +710,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
   }
 
   Widget _buildMemberCard(TeamMember member) {
-    // Color gradient per initials (deterministik)
     final colorPairs = [
       [const Color(0xFF4B6EF5), const Color(0xFF7C9EFF)],
       [const Color(0xFF7C9EFF), const Color(0xFFB8CDFF)],
@@ -719,9 +723,10 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: _cardBg,
+        // ── BG card sama dengan ProfileScreen ──
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Row(
         children: [
@@ -749,7 +754,6 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             ),
           ),
           const SizedBox(width: 12),
-          // Name + role
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -772,8 +776,8 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                         decoration: BoxDecoration(
                           color: _green.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(4),
-                          border:
-                              Border.all(color: _green.withValues(alpha: 0.3)),
+                          border: Border.all(
+                              color: _green.withValues(alpha: 0.3)),
                         ),
                         child: const Text(
                           'Ketua',
@@ -805,8 +809,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
             decoration: BoxDecoration(
               color: _surface,
               borderRadius: BorderRadius.circular(7),
-              border:
-                  Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
             ),
             child: Icon(
               Icons.more_vert_rounded,

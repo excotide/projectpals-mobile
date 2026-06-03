@@ -8,6 +8,16 @@ import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
 import 'room_information_screen.dart'; // ← import screen baru
 
+// ── Accent palette ─────────────────────────────────────────────────────────────
+const Color _accentBlue      = Color(0xFF5B7FFF);
+const Color _accentBlueDark  = Color(0xFF4B6EF5);
+const Color _accentBlueLight = Color(0xFF7C9EFF);
+const Color _accentGreen     = Color(0xFF4ADE80);
+const Color _accentPurple    = Color(0xFF8B5CF6);
+const Color _accentTeal      = Color(0xFF2D9B6F);
+const Color _accentIndigo    = Color(0xFF3B4FD9);
+const Color _accentYellow    = Color(0xFFFBBF24);
+
 // ── Room Detail Screen ─────────────────────────────────────────────────────────
 
 class RoomDetailScreen extends StatefulWidget {
@@ -22,6 +32,9 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
   late RoomEntity _room;
   List<MemberEntity> _members = [];
   bool _loadingMembers = true;
+
+  // BG halaman — sama dengan ProfileScreen
+  static Color get _bgColor => AppColors.darkBlueBg;
 
   bool get _isOwner {
     final s = context.read<AuthBloc>().state;
@@ -39,10 +52,10 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF161C2C),
+        backgroundColor: AppColors.cardBg,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+            side: BorderSide(color: AppColors.borderColor)),
         title: const Text('Delete Room?',
             style:
                 TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -72,10 +85,10 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF161C2C),
+        backgroundColor: AppColors.cardBg,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+            side: BorderSide(color: AppColors.borderColor)),
         title: const Text('Leave Room?',
             style:
                 TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -130,7 +143,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
           setState(() => _room = state.room);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Room updated successfully'),
-            backgroundColor: AppColors.mintGreen,
+            backgroundColor: _accentGreen,
           ));
         } else if (state is RoomFailure) {
           setState(() => _loadingMembers = false);
@@ -141,19 +154,20 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF0D1117),
+        backgroundColor: _bgColor,
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0D1117),
+          backgroundColor: _bgColor,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded,
                 color: Colors.white, size: 18),
             onPressed: () => Navigator.pop(context),
           ),
+          // ── Title diberi warna biru sesuai desain ──
           title: const Text(
             'Room Details',
             style: TextStyle(
-              color: Colors.white,
+              color: _accentBlue,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
@@ -166,7 +180,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
-                    backgroundColor: const Color(0xFF161C2C),
+                    backgroundColor: AppColors.cardBg,
                     shape: const RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(20)),
@@ -176,7 +190,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
                       children: [
                         ListTile(
                           leading: const Icon(Icons.edit_outlined,
-                              color: Color(0xFF5B7FFF)),
+                              color: _accentBlue),
                           title: const Text('Edit Room',
                               style: TextStyle(color: Colors.white)),
                           onTap: () {
@@ -265,7 +279,7 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(24),
-          child: CircularProgressIndicator(color: Color(0xFF5B7FFF)),
+          child: CircularProgressIndicator(color: _accentBlue),
         ),
       );
     }
@@ -304,11 +318,15 @@ class _RoomInformationButton extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF141D2E),
+          // BG card — sama dengan ProfileScreen
+          color: AppColors.cardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF2D4799).withValues(alpha: 0.5)),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF141D2E), Color(0xFF131E35)],
+          border: Border.all(color: AppColors.borderColor),
+          gradient: LinearGradient(
+            colors: [
+              AppColors.cardBg,
+              _accentBlueDark.withValues(alpha: 0.18),
+            ],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
@@ -319,13 +337,13 @@ class _RoomInformationButton extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF5B7FFF).withValues(alpha: 0.15),
+                color: _accentBlue.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                    color: const Color(0xFF5B7FFF).withValues(alpha: 0.3)),
+                    color: _accentBlue.withValues(alpha: 0.3)),
               ),
               child: const Icon(Icons.info_outline_rounded,
-                  color: Color(0xFF5B7FFF), size: 18),
+                  color: _accentBlue, size: 18),
             ),
             const SizedBox(width: 14),
             const Expanded(
@@ -344,7 +362,7 @@ class _RoomInformationButton extends StatelessWidget {
                   Text(
                     'Detail anggota, smart matching & info ruang',
                     style: TextStyle(
-                      color: Color(0xFF7C9EFF),
+                      color: _accentBlueLight,
                       fontSize: 11,
                     ),
                   ),
@@ -352,7 +370,7 @@ class _RoomInformationButton extends StatelessWidget {
               ),
             ),
             Icon(Icons.arrow_forward_ios_rounded,
-                color: Colors.white.withValues(alpha: 0.3), size: 14),
+                color: Colors.white.withValues(alpha: 0.4), size: 14),
           ],
         ),
       ),
@@ -368,12 +386,29 @@ class _TeamInfoCard extends StatelessWidget {
 
   String get _statusLabel {
     return switch (room.status) {
-      'open' => 'Matched',
-      'matched' => 'Matched',
-      'ongoing' || 'in_progress' => 'In Progress',
-      'matching' => 'Matching',
-      'completed' || 'closed' => 'Completed',
-      _ => room.status,
+      'open'                       => 'Open',
+      'matched'                    => 'Finished',
+      'ongoing' || 'in_progress'   => 'In Progress',
+      'matching'                   => 'Matching',
+      'completed' || 'closed'      => 'Finished',
+      _                            => room.status,
+    };
+  }
+
+  // Apakah status ini termasuk "finished / selesai"
+  bool get _isFinished {
+    return switch (room.status) {
+      'matched' || 'completed' || 'closed' => true,
+      _                                    => false,
+    };
+  }
+
+  Color get _statusColor {
+    return switch (room.status) {
+      'ongoing' || 'in_progress' || 'matched' => _accentGreen,
+      'matching'                               => _accentYellow,
+      'completed' || 'closed'                  => _accentGreen,
+      _                                        => Colors.white38,
     };
   }
 
@@ -383,9 +418,10 @@ class _TeamInfoCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF141D2E),
+        // BG card — sama dengan ProfileScreen
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,24 +438,58 @@ class _TeamInfoCard extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.mintGreen.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(6),
-                  border:
-                      Border.all(color: AppColors.mintGreen.withValues(alpha: 0.3)),
-                ),
-                child: Text(
-                  _statusLabel,
-                  style: const TextStyle(
-                    color: AppColors.mintGreen,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              // ── Status badge: gradient hijau jika finished, solid warna lain ──
+              _isFinished
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFF6EE7A0), // hijau muda / putih-hijau
+                            Color(0xFF22C55E), // hijau pekat
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.check_circle_rounded,
+                              color: Colors.white, size: 13),
+                          SizedBox(width: 5),
+                          Text(
+                            'FINISHED',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                            color: _statusColor.withValues(alpha: 0.3)),
+                      ),
+                      child: Text(
+                        _statusLabel,
+                        style: TextStyle(
+                          color: _statusColor,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
             ],
           ),
           const SizedBox(height: 10),
@@ -526,7 +596,7 @@ class _InfoItem extends StatelessWidget {
                   );
                 },
                 child: Icon(Icons.copy_rounded,
-                    color: Colors.white.withValues(alpha: 0.3), size: 13),
+                    color: Colors.white.withValues(alpha: 0.4), size: 13),
               ),
             ],
           ],
@@ -551,9 +621,10 @@ class _TargetCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF141D2E),
+        // BG card — sama dengan ProfileScreen
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,7 +643,7 @@ class _TargetCard extends StatelessWidget {
               Text(
                 '$filled/$total Selesai',
                 style: const TextStyle(
-                  color: AppColors.mintGreen,
+                  color: _accentGreen,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -580,16 +651,40 @@ class _TargetCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
+
+          // ── Progress bar dengan gradient hijau kiri-putih → kanan-pekat ──
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: filled / total,
-              minHeight: 5,
-              backgroundColor: Colors.white.withValues(alpha: 0.07),
-              valueColor:
-                  const AlwaysStoppedAnimation<Color>(AppColors.mintGreen),
+            child: SizedBox(
+              height: 6,
+              child: Stack(
+                children: [
+                  // Track background
+                  Container(
+                    width: double.infinity,
+                    color: Colors.white.withValues(alpha: 0.07),
+                  ),
+                  // Gradient fill sesuai nilai progress
+                  FractionallySizedBox(
+                    widthFactor: (filled / total).clamp(0.0, 1.0),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFFA7F3C4), // hijau muda / putih-hijau (kiri)
+                            Color(0xFF22C55E), // hijau pekat (kanan)
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+
           const SizedBox(height: 16),
           ...room.roles.asMap().entries.map((e) {
             final roleCount =
@@ -630,12 +725,12 @@ class _TargetCard extends StatelessWidget {
                         horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: i < roleFilled
-                          ? AppColors.mintGreen.withValues(alpha: 0.08)
+                          ? _accentGreen.withValues(alpha: 0.08)
                           : Colors.white.withValues(alpha: 0.03),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: i < roleFilled
-                            ? AppColors.mintGreen.withValues(alpha: 0.2)
+                            ? _accentGreen.withValues(alpha: 0.2)
                             : Colors.white.withValues(alpha: 0.06),
                       ),
                     ),
@@ -646,7 +741,7 @@ class _TargetCard extends StatelessWidget {
                               ? Icons.check_box_rounded
                               : Icons.check_box_outline_blank_rounded,
                           color: i < roleFilled
-                              ? AppColors.mintGreen
+                              ? _accentGreen
                               : Colors.white.withValues(alpha: 0.2),
                           size: 16,
                         ),
@@ -691,9 +786,10 @@ class _DetailMemberCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF141D2E),
+        // BG card — sama dengan ProfileScreen
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Row(
         children: [
@@ -702,6 +798,8 @@ class _DetailMemberCard extends StatelessWidget {
             height: 42,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
+              // Border avatar stack — ikut cardBg biar seamless
+              border: Border.all(color: AppColors.cardBg, width: 2),
               color: _avatarColor(member.userId),
             ),
             child: Center(
@@ -738,15 +836,15 @@ class _DetailMemberCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.mintGreen.withValues(alpha: 0.15),
+                          color: _accentGreen.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                              color: AppColors.mintGreen.withValues(alpha: 0.3)),
+                              color: _accentGreen.withValues(alpha: 0.3)),
                         ),
                         child: const Text(
                           'BETA',
                           style: TextStyle(
-                            color: AppColors.mintGreen,
+                            color: _accentGreen,
                             fontSize: 8,
                             fontWeight: FontWeight.bold,
                           ),
@@ -771,10 +869,9 @@ class _DetailMemberCard extends StatelessWidget {
             width: 10,
             height: 10,
             decoration: BoxDecoration(
-              color: AppColors.mintGreen,
+              color: _accentGreen,
               shape: BoxShape.circle,
-              border:
-                  Border.all(color: const Color(0xFF141D2E), width: 1.5),
+              border: Border.all(color: AppColors.cardBg, width: 1.5),
             ),
           ),
         ],
@@ -795,9 +892,9 @@ class _DetailMemberCard extends StatelessWidget {
 
   Color _avatarColor(int id) {
     final colors = [
-      const Color(0xFF3B4FD9),
-      const Color(0xFF2D9B6F),
-      const Color(0xFF8B5CF6),
+      _accentIndigo,
+      _accentTeal,
+      _accentPurple,
       const Color(0xFFD97706),
       const Color(0xFFDC2626),
     ];
@@ -872,9 +969,10 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF0D1117),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          // BG halaman — sama dengan ProfileScreen
+          color: AppColors.darkBlueBg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: DraggableScrollableSheet(
           expand: false,
@@ -912,10 +1010,10 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                 children: _statuses.map((s) {
                   final selected = _status == s;
                   final color = switch (s) {
-                    'open' => const Color(0xFF5B7FFF),
-                    'matching' => Colors.orange,
-                    'ongoing' => AppColors.mintGreen,
-                    _ => Colors.white38,
+                    'open'     => _accentBlue,
+                    'matching' => _accentYellow,
+                    'ongoing'  => _accentGreen,
+                    _          => Colors.white38,
                   };
                   return GestureDetector(
                     onTap: () => setState(() => _status = s),
@@ -925,12 +1023,12 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                       decoration: BoxDecoration(
                         color: selected
                             ? color.withValues(alpha: 0.15)
-                            : const Color(0xFF141D2E),
+                            : AppColors.cardBg,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                             color: selected
                                 ? color
-                                : Colors.white.withValues(alpha: 0.1)),
+                                : AppColors.borderColor),
                       ),
                       child: Text(s.toUpperCase(),
                           style: TextStyle(
@@ -957,7 +1055,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                       width: 48,
                       height: 54,
                       decoration: BoxDecoration(
-                          color: const Color(0xFF5B7FFF),
+                          color: _accentBlue,
                           borderRadius: BorderRadius.circular(12)),
                       child: const Icon(Icons.add,
                           color: Colors.white, size: 22),
@@ -971,10 +1069,10 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF141D2E),
+                      // BG card — sama dengan ProfileScreen
+                      color: AppColors.cardBg,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.07)),
+                      border: Border.all(color: AppColors.borderColor),
                     ),
                     child: Row(
                       children: [
@@ -982,7 +1080,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                             width: 8,
                             height: 8,
                             decoration: const BoxDecoration(
-                                color: Color(0xFF5B7FFF),
+                                color: _accentBlue,
                                 shape: BoxShape.circle)),
                         const SizedBox(width: 12),
                         Expanded(
@@ -993,7 +1091,7 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                           onTap: () =>
                               setState(() => _roles.removeAt(e.key)),
                           child: Icon(Icons.delete_outline,
-                              color: Colors.white.withValues(alpha: 0.3),
+                              color: Colors.white.withValues(alpha: 0.4),
                               size: 18),
                         ),
                       ],
@@ -1019,10 +1117,10 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
                           ? _save
                           : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5B7FFF),
+                    backgroundColor: _accentBlue,
                     foregroundColor: Colors.white,
                     disabledBackgroundColor:
-                        const Color(0xFF5B7FFF).withValues(alpha: 0.3),
+                        _accentBlue.withValues(alpha: 0.3),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
@@ -1050,9 +1148,10 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
       {ValueChanged<String>? onSubmitted}) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF141D2E),
+        // BG card — sama dengan ProfileScreen
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: TextField(
         controller: ctrl,
@@ -1075,9 +1174,10 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: const Color(0xFF141D2E),
+        // BG card — sama dengan ProfileScreen
+        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Row(
         children: [
@@ -1124,14 +1224,14 @@ class _EditRoomSheetState extends State<_EditRoomSheet> {
           shape: BoxShape.circle,
           border: Border.all(
             color: enabled
-                ? const Color(0xFF5B7FFF).withValues(alpha: 0.6)
+                ? _accentBlue.withValues(alpha: 0.6)
                 : Colors.white.withValues(alpha: 0.1),
           ),
         ),
         child: Icon(icon,
             size: 16,
             color: enabled
-                ? const Color(0xFF5B7FFF)
+                ? _accentBlue
                 : Colors.white.withValues(alpha: 0.2)),
       ),
     );

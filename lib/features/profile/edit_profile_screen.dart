@@ -3,6 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_colors.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 
+// ── Accent palette ────────────────────────────────────────────
+const Color _accentBlue      = Color(0xFF5B7FFF);
+const Color _accentBlueDark  = Color(0xFF4B6EF5);
+const Color _accentBlueLight = Color(0xFF7C9EFF);
+
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -35,6 +40,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         final user = state is AuthAuthenticated ? state.user : null;
 
         return Scaffold(
+          // BG halaman — sama dengan ProfileScreen
           backgroundColor: AppColors.darkBlueBg,
           body: Column(
             children: [
@@ -119,7 +125,11 @@ class _EditProfileHero extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.primaryCyan,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF4B6EF5), Color(0xFF7C9EFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(32),
           bottomRight: Radius.circular(32),
@@ -149,12 +159,13 @@ class _EditProfileHero extends StatelessWidget {
                 height: 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF002B35),
-                  border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.5), width: 2.5),
+                  // BG card — sama dengan ProfileScreen
+                  color: AppColors.cardBg,
+                  // Border avatar stack — ikut cardBg biar seamless
+                  border: Border.all(color: AppColors.cardBg, width: 2),
                 ),
                 child: const Icon(Icons.person,
-                    color: AppColors.primaryCyan, size: 48),
+                    color: _accentBlue, size: 48),
               ),
               Positioned(
                 bottom: -2,
@@ -164,9 +175,9 @@ class _EditProfileHero extends StatelessWidget {
                   height: 28,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFF002B35),
+                    color: _accentBlueDark,
                     border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.7), width: 1.5),
+                        color: Colors.white.withValues(alpha: 0.4), width: 1.5),
                   ),
                   child: const Icon(Icons.edit,
                       color: Colors.white, size: 14),
@@ -183,14 +194,14 @@ class _EditProfileHero extends StatelessWidget {
               Text(
                 user != null ? '@${user.username}' : '@username',
                 style: const TextStyle(
-                  color: Color(0xFF003642),
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.4,
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(Icons.edit, color: Color(0xFF003642), size: 14),
+              const Icon(Icons.edit, color: Colors.white60, size: 14),
             ],
           ),
         ],
@@ -219,7 +230,7 @@ class _HeroButton extends StatelessWidget {
         width: 110,
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFF002B35),
+          color: _accentBlueDark,
           borderRadius: BorderRadius.circular(24),
         ),
         alignment: Alignment.center,
@@ -275,6 +286,7 @@ class _InputField extends StatelessWidget {
         hintText: hint,
         hintStyle: const TextStyle(color: AppColors.textGrey),
         filled: true,
+        // BG card — sama dengan ProfileScreen
         fillColor: AppColors.cardBg,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -285,7 +297,7 @@ class _InputField extends StatelessWidget {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide:
-              const BorderSide(color: AppColors.primaryCyan, width: 1.5),
+              const BorderSide(color: _accentBlue, width: 1.5),
         ),
       ),
     );
@@ -321,30 +333,24 @@ class _EditPreferenceChips extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
                 color: active
-                    ? AppColors.primaryCyan.withValues(alpha: 0.18)
+                    ? _accentBlue.withValues(alpha: 0.35)
                     : AppColors.cardBg,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: active
-                      ? AppColors.primaryCyan
-                      : AppColors.borderColor,
+                  color: active ? _accentBlue : AppColors.borderColor,
                   width: active ? 1.5 : 1,
                 ),
               ),
               child: Column(
                 children: [
                   Icon(options[i]['icon'] as IconData,
-                      color: active
-                          ? AppColors.primaryCyan
-                          : AppColors.textGrey,
+                      color: active ? _accentBlueLight : AppColors.textGrey,
                       size: 22),
                   const SizedBox(height: 6),
                   Text(
                     options[i]['label'] as String,
                     style: TextStyle(
-                      color: active
-                          ? AppColors.primaryCyan
-                          : AppColors.textGrey,
+                      color: active ? _accentBlueLight : AppColors.textGrey,
                       fontSize: 12,
                       fontWeight: active
                           ? FontWeight.w600
