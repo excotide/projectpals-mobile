@@ -35,4 +35,6 @@ abstract class RoomRepository {
   Future<void> leaveRoom(String roomCode);
 
   Future<List<MemberEntity>> getRoomMembers(String roomCode);
+
+  Future<Map<String, dynamic>> startMatching(String roomCode);
 }

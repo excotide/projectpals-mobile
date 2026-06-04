@@ -26,4 +26,19 @@ class RoomEntity {
     this.createdAt,
     this.updatedAt,
   });
+
+  RoomEntity copyWith({String? status}) => RoomEntity(
+        id: id,
+        createdBy: createdBy,
+        projectTheme: projectTheme,
+        roomCode: roomCode,
+        roles: roles,
+        productivityWindows: productivityWindows,
+        environments: environments,
+        maxPerGroup: maxPerGroup,
+        numberOfGroups: numberOfGroups,
+        status: status ?? this.status,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
 }

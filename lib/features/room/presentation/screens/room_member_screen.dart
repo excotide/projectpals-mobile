@@ -1,4 +1,7 @@
-// ── room_edit_screen.dart ─────────────────────────────────────────────────────
+// ── room_member_screen.dart ───────────────────────────────────────────────────
+// Layar detail room untuk member NON-OWNER (FLOWS §2 DetailMemberRoom).
+// Ditampilkan saat non-owner membuka detail room (validasi di RoomInformationScreen),
+// bukan dari tombol EDIT owner.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,35 +9,26 @@ import '../../../../core/constants/app_colors.dart';
 import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
 
-class RoomEditScreen extends StatefulWidget {
+class RoomMemberScreen extends StatefulWidget {
   final RoomEntity room;
-  const RoomEditScreen({super.key, required this.room});
+  const RoomMemberScreen({super.key, required this.room});
 
   @override
-  State<RoomEditScreen> createState() => _RoomEditScreenState();
+  State<RoomMemberScreen> createState() => _RoomMemberScreenState();
 }
 
-class _RoomEditScreenState extends State<RoomEditScreen> {
+class _RoomMemberScreenState extends State<RoomMemberScreen> {
   // ── BG sama dengan ProfileScreen ──
   static Color get _bgColor => AppColors.darkBlueBg;
 
-  static const Color _accent      = Color(0xFF7C9EFF);
+  static const Color _accent = Color(0xFF7C9EFF);
   static const Color _accentLight = Color(0xFFB8CDFF);
-  static const Color _accentDark  = Color(0xFF4B6EF5);
-  static const Color _green       = Color(0xFF4ADE80);
+  static const Color _accentDark = Color(0xFF4B6EF5);
+  static const Color _green = Color(0xFF4ADE80);
 
   late RoomEntity _room;
   String? _selectedRole;
   String? _selectedEnvironment;
-
-  final List<String> _environments = ['Remote', 'Hybrid', 'On-site', 'Flexible'];
-
-  static const Map<String, IconData> _envIcons = {
-    'Remote'  : Icons.laptop_mac_outlined,
-    'Hybrid'  : Icons.compare_arrows_rounded,
-    'On-site' : Icons.location_city_outlined,
-    'Flexible': Icons.tune_rounded,
-  };
 
   @override
   void initState() {
@@ -47,15 +41,35 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
   void _saveChanges() {
     final Map<String, dynamic> data = {};
     if (_selectedRole != null) data['primary_role'] = _selectedRole;
-    if (_selectedEnvironment != null) data['environment'] = _selectedEnvironment;
+    if (_selectedEnvironment != null) {
+      data['environment'] = _selectedEnvironment;
+    }
 
     context.read<RoomBloc>().add(
-          RoomUpdateRequested(
-            roomCode: _room.roomCode,
-            data: data,
-          ),
-        );
-    Navigator.pop(context);
+      RoomUpdateRequested(roomCode: _room.roomCode, data: data),
+    );
+    // Snackbar sukses/gagal ditangani oleh listener saat RoomUpdated/RoomFailure.
+  }
+
+  /// Popup edit peran & lingkungan kerja (menggantikan expand ke bawah).
+  void _showEditSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _EditRoleEnvSheet(
+        roles: _room.roles.isNotEmpty ? _room.roles : ['Member'],
+        initialRole: _selectedRole,
+        initialEnvironment: _selectedEnvironment ?? 'Remote',
+        onSave: (role, env) {
+          setState(() {
+            _selectedRole = role;
+            _selectedEnvironment = env;
+          });
+          _saveChanges();
+        },
+      ),
+    );
   }
 
   void _showLeaveConfirm() {
@@ -78,8 +92,7 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('BATAL',
-                style: TextStyle(color: Colors.white60)),
+            child: const Text('BATAL', style: TextStyle(color: Colors.white60)),
           ),
           TextButton(
             onPressed: () {
@@ -90,7 +103,9 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
             child: const Text(
               'KELUAR',
               style: TextStyle(
-                  color: AppColors.red, fontWeight: FontWeight.bold),
+                color: AppColors.red,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -103,14 +118,17 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
     return BlocListener<RoomBloc, RoomState>(
       listener: (context, state) {
         if (state is RoomUpdated) {
+          // Update sukses → refresh data room (popup sudah tertutup saat simpan).
+          setState(() {
+            _room = state.room;
+          });
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Room berhasil diperbarui'),
+              content: Text('Peran & lingkungan berhasil diperbarui'),
               backgroundColor: Color(0xFF4ADE80),
               behavior: SnackBarBehavior.floating,
             ),
           );
-          Navigator.pop(context);
         } else if (state is RoomFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -138,14 +156,6 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                       const SizedBox(height: 16),
                       // ── Profile card dengan button di dalam ──
                       _buildProfileCard(),
-                      const SizedBox(height: 24),
-                      _buildSectionLabel('PILIH PERAN KAMU'),
-                      const SizedBox(height: 10),
-                      _buildRoleSelector(),
-                      const SizedBox(height: 24),
-                      _buildSectionLabel('LINGKUNGAN KERJA'),
-                      const SizedBox(height: 10),
-                      _buildEnvironmentSelector(),
                       const SizedBox(height: 32),
                     ],
                   ),
@@ -164,8 +174,11 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: Colors.white, size: 18),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.white,
+              size: 18,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           Expanded(
@@ -193,8 +206,11 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: AppColors.borderColor),
             ),
-            child: Icon(Icons.more_vert,
-                color: Colors.white.withValues(alpha: 0.5), size: 18),
+            child: Icon(
+              Icons.more_vert,
+              color: Colors.white.withValues(alpha: 0.5),
+              size: 18,
+            ),
           ),
           const SizedBox(width: 8),
         ],
@@ -225,8 +241,11 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: _accent.withValues(alpha: 0.5)),
                   ),
-                  child: const Icon(Icons.info_outline_rounded,
-                      color: _accent, size: 14),
+                  child: const Icon(
+                    Icons.info_outline_rounded,
+                    color: _accent,
+                    size: 14,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 ShaderMask(
@@ -249,7 +268,10 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
+            child: Divider(
+              color: Colors.white.withValues(alpha: 0.06),
+              height: 1,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -333,8 +355,11 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                   shape: BoxShape.circle,
                   border: Border.all(color: _accent.withValues(alpha: 0.4)),
                 ),
-                child: const Icon(Icons.person_outline_rounded,
-                    color: _accent, size: 15),
+                child: const Icon(
+                  Icons.person_outline_rounded,
+                  color: _accent,
+                  size: 15,
+                ),
               ),
               const SizedBox(width: 10),
               const Text(
@@ -373,58 +398,45 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
           ),
           const SizedBox(height: 18),
 
-          // ── Edit Role & Environment button — di DALAM card ──
-          BlocBuilder<RoomBloc, RoomState>(
-            builder: (context, state) {
-              final isLoading = state is RoomLoading;
-              return GestureDetector(
-                onTap: isLoading ? null : _saveChanges,
-                child: Container(
-                  width: double.infinity,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [_accent, _accentDark],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: _accentDark.withValues(alpha: 0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.edit_outlined,
-                                  color: Colors.white, size: 16),
-                              SizedBox(width: 8),
-                              Text(
-                                'Edit Role & Environment',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
+          // ── Edit Role & Environment button — buka popup ──
+          GestureDetector(
+            onTap: _showEditSheet,
+            child: Container(
+              width: double.infinity,
+              height: 48,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [_accent, _accentDark],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                 ),
-              );
-            },
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: _accentDark.withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.edit_outlined, color: Colors.white, size: 16),
+                    SizedBox(width: 8),
+                    Text(
+                      'Edit Role & Environment',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 10),
 
@@ -438,13 +450,18 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                    color: AppColors.red.withValues(alpha: 0.45), width: 1.2),
+                  color: AppColors.red.withValues(alpha: 0.45),
+                  width: 1.2,
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.exit_to_app_rounded,
-                      color: AppColors.red.withValues(alpha: 0.8), size: 16),
+                  Icon(
+                    Icons.exit_to_app_rounded,
+                    color: AppColors.red.withValues(alpha: 0.8),
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Leave Room',
@@ -462,31 +479,170 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
       ),
     );
   }
+}
 
-  Widget _buildSectionLabel(String label) {
-    return Text(
-      label,
-      style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.35),
-        fontSize: 11,
-        letterSpacing: 1.4,
-        fontWeight: FontWeight.w700,
+// ── Reusable Info Cell ─────────────────────────────────────────────────────────
+
+class _InfoCell extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  const _InfoCell({required this.label, required this.value, this.valueColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.35),
+            fontSize: 10,
+            letterSpacing: 1.2,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            color: valueColor ?? Colors.white.withValues(alpha: 0.75),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            height: 1.4,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Popup Edit Peran & Lingkungan ──────────────────────────────────────────────
+
+class _EditRoleEnvSheet extends StatefulWidget {
+  final List<String> roles;
+  final String? initialRole;
+  final String initialEnvironment;
+  final void Function(String? role, String environment) onSave;
+
+  const _EditRoleEnvSheet({
+    required this.roles,
+    required this.initialRole,
+    required this.initialEnvironment,
+    required this.onSave,
+  });
+
+  @override
+  State<_EditRoleEnvSheet> createState() => _EditRoleEnvSheetState();
+}
+
+class _EditRoleEnvSheetState extends State<_EditRoleEnvSheet> {
+  static const Color _accent = Color(0xFF7C9EFF);
+  static const Color _accentLight = Color(0xFFB8CDFF);
+  static const Color _accentDark = Color(0xFF4B6EF5);
+
+  static const List<String> _environments = [
+    'Remote',
+    'Hybrid',
+    'On-site',
+    'Flexible',
+  ];
+
+  static const Map<String, IconData> _envIcons = {
+    'Remote': Icons.laptop_mac_outlined,
+    'Hybrid': Icons.compare_arrows_rounded,
+    'On-site': Icons.location_city_outlined,
+    'Flexible': Icons.tune_rounded,
+  };
+
+  String? _selectedRole;
+  late String _selectedEnvironment;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedRole = widget.initialRole;
+    _selectedEnvironment = widget.initialEnvironment;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.darkBlueBg,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            20,
+            12,
+            20,
+            MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'Edit Peran & Lingkungan',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              _label('PILIH PERAN KAMU'),
+              const SizedBox(height: 10),
+              _buildRoleSelector(),
+              const SizedBox(height: 22),
+              _label('LINGKUNGAN KERJA'),
+              const SizedBox(height: 10),
+              _buildEnvironmentSelector(),
+              const SizedBox(height: 24),
+              _buildSaveButton(),
+            ],
+          ),
+        ),
       ),
     );
   }
 
+  Widget _label(String text) => Text(
+    text,
+    style: TextStyle(
+      color: Colors.white.withValues(alpha: 0.35),
+      fontSize: 11,
+      letterSpacing: 1.4,
+      fontWeight: FontWeight.w700,
+    ),
+  );
+
   Widget _buildRoleSelector() {
-    final roles = _room.roles.isNotEmpty ? _room.roles : ['Member'];
     return Column(
-      children: roles.map((role) {
+      children: widget.roles.map((role) {
         final isSelected = _selectedRole == role;
         return GestureDetector(
           onTap: () => setState(() => _selectedRole = role),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             margin: const EdgeInsets.only(bottom: 10),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: isSelected
                   ? _accent.withValues(alpha: 0.08)
@@ -540,8 +696,11 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
                       color: _accent.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.check_rounded,
-                        color: _accent, size: 14),
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: _accent,
+                      size: 14,
+                    ),
                   ),
               ],
             ),
@@ -601,46 +760,49 @@ class _RoomEditScreenState extends State<RoomEditScreen> {
       }).toList(),
     );
   }
-}
 
-// ── Reusable Info Cell ─────────────────────────────────────────────────────────
-
-class _InfoCell extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color? valueColor;
-
-  const _InfoCell({
-    required this.label,
-    required this.value,
-    this.valueColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.35),
-            fontSize: 10,
-            letterSpacing: 1.2,
-            fontWeight: FontWeight.w600,
+  Widget _buildSaveButton() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop();
+        widget.onSave(_selectedRole, _selectedEnvironment);
+      },
+      child: Container(
+        width: double.infinity,
+        height: 50,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [_accentLight, _accentDark],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(13),
+          boxShadow: [
+            BoxShadow(
+              color: _accentDark.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.check_rounded, color: Colors.white, size: 18),
+              SizedBox(width: 8),
+              Text(
+                'Simpan Perubahan',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            color: valueColor ?? Colors.white.withValues(alpha: 0.75),
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            height: 1.4,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

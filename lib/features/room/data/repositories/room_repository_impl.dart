@@ -74,4 +74,8 @@ class RoomRepositoryImpl implements RoomRepository {
   @override
   Future<List<MemberEntity>> getRoomMembers(String roomCode) =>
       remoteDataSource.getRoomMembers(roomCode);
+
+  @override
+  Future<Map<String, dynamic>> startMatching(String roomCode) =>
+      remoteDataSource.startMatching(roomCode);
 }

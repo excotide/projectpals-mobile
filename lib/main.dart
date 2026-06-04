@@ -30,6 +30,7 @@ import 'features/room/domain/usecases/get_room_preview_usecase.dart';
 import 'features/room/domain/usecases/join_room_usecase.dart';
 import 'features/room/domain/usecases/leave_room_usecase.dart';
 import 'features/room/domain/usecases/normalize_role_usecase.dart';
+import 'features/room/domain/usecases/start_matching_usecase.dart';
 import 'features/room/domain/usecases/update_room_usecase.dart';
 
 // Room — bloc
@@ -83,6 +84,7 @@ class ProjectPalsApp extends StatelessWidget {
             deleteRoomUseCase: DeleteRoomUseCase(roomRepo),
             leaveRoomUseCase: LeaveRoomUseCase(roomRepo),
             getRoomMembersUseCase: GetRoomMembersUseCase(roomRepo),
+            startMatchingUseCase: StartMatchingUseCase(roomRepo),
           ),
         ),
         BlocProvider(
@@ -92,6 +94,7 @@ class ProjectPalsApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        navigatorKey: ApiClient.navigatorKey,
         title: 'ProjectPals',
         theme: ThemeData(
           brightness: Brightness.dark,

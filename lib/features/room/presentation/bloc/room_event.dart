@@ -63,3 +63,8 @@ class RoomMembersLoadRequested extends RoomEvent {
   final String roomCode;
   RoomMembersLoadRequested(this.roomCode);
 }
+
+class RoomMatchRequested extends RoomEvent {
+  final String roomCode;
+  RoomMatchRequested(this.roomCode);
+}

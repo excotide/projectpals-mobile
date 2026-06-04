@@ -40,6 +40,12 @@ class RoomMembersLoaded extends RoomState {
   RoomMembersLoaded(this.members);
 }
 
+class RoomMatched extends RoomState {
+  /// Map `data` hasil match: `teams`, `unassigned`, `meta`.
+  final Map<String, dynamic> result;
+  RoomMatched(this.result);
+}
+
 class RoomFailure extends RoomState {
   final String message;
   RoomFailure(this.message);

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
-import 'room_detail_screen.dart';
+import 'room_information_screen.dart';
 
 class JoinScreen2 extends StatefulWidget {
   final Map<String, dynamic> preview;
@@ -90,7 +90,7 @@ class _JoinScreen2State extends State<JoinScreen2> {
     final room = widget.createdRoom;
     if (room != null) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => RoomDetailScreen(room: room)),
+        MaterialPageRoute(builder: (_) => RoomInformationScreen(room: room)),
       );
     } else {
       Navigator.of(context).pop();

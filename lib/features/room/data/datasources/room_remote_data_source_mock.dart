@@ -148,6 +148,12 @@ class RoomRemoteDataSourceMock implements RoomRemoteDataSource {
   }
 
   @override
+  Future<Map<String, dynamic>> startMatching(String roomCode) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return {'teams': [], 'unassigned': [], 'meta': {}};
+  }
+
+  @override
   Future<List<MemberModel>> getRoomMembers(String roomCode) async {
     await Future.delayed(const Duration(milliseconds: 300));
     return [

@@ -6,7 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/room_entity.dart';
 import '../bloc/room_bloc.dart';
-import 'room_detail_screen.dart';
+import 'room_information_screen.dart';
 import 'my_rooms_screen.dart'; // ← TAMBAHAN: import MyRoomsScreen
 
 class RoomScreen extends StatefulWidget {
@@ -383,7 +383,7 @@ class _RoomScreenState extends State<RoomScreen> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (_) => RoomDetailScreen(room: room)),
+                  builder: (_) => RoomInformationScreen(room: room)),
             ),
           ),
         );

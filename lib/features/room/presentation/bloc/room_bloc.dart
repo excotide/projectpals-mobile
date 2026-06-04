@@ -9,6 +9,7 @@ import '../../../room/domain/usecases/get_room_members_usecase.dart';
 import '../../../room/domain/usecases/get_room_preview_usecase.dart';
 import '../../../room/domain/usecases/join_room_usecase.dart';
 import '../../../room/domain/usecases/leave_room_usecase.dart';
+import '../../../room/domain/usecases/start_matching_usecase.dart';
 import '../../../room/domain/usecases/update_room_usecase.dart';
 
 part 'room_event.dart';
@@ -23,6 +24,7 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
   final DeleteRoomUseCase deleteRoomUseCase;
   final LeaveRoomUseCase leaveRoomUseCase;
   final GetRoomMembersUseCase getRoomMembersUseCase;
+  final StartMatchingUseCase startMatchingUseCase;
 
   RoomBloc({
     required this.createRoomUseCase,
@@ -33,6 +35,7 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
     required this.deleteRoomUseCase,
     required this.leaveRoomUseCase,
     required this.getRoomMembersUseCase,
+    required this.startMatchingUseCase,
   }) : super(RoomInitial()) {
     on<RoomMyRoomsLoadRequested>(_onMyRoomsLoad);
     on<RoomCreateRequested>(_onCreateRoom);
@@ -42,6 +45,7 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
     on<RoomDeleteRequested>(_onDeleteRoom);
     on<RoomUpdateRequested>(_onUpdateRoom);
     on<RoomMembersLoadRequested>(_onMembersLoad);
+    on<RoomMatchRequested>(_onStartMatching);
   }
 
   Future<void> _onMyRoomsLoad(
@@ -155,6 +159,21 @@ class RoomBloc extends Bloc<RoomEvent, RoomState> {
     try {
       final room = await updateRoomUseCase(event.roomCode, event.data);
       emit(RoomUpdated(room));
+    } on ServerException catch (e) {
+      emit(RoomFailure(e.message));
+    } catch (_) {
+      emit(RoomFailure('Network error. Check your connection.'));
+    }
+  }
+
+  Future<void> _onStartMatching(
+    RoomMatchRequested event,
+    Emitter<RoomState> emit,
+  ) async {
+    emit(RoomLoading());
+    try {
+      final result = await startMatchingUseCase(event.roomCode);
+      emit(RoomMatched(result));
     } on ServerException catch (e) {
       emit(RoomFailure(e.message));
     } catch (_) {

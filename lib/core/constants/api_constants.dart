@@ -25,4 +25,6 @@ class ApiConstants {
   static String deleteRoom(String roomCode) => '/api/rooms/$roomCode';
   static String leaveRoom(String roomCode) => '/api/rooms/$roomCode/leave';
   static String roomMembers(String roomCode) => '/api/rooms/$roomCode/members';
+  static String matchRoom(String roomCode) => '/api/rooms/$roomCode/match';
+  static String roomTeams(String roomCode) => '/api/rooms/$roomCode/teams';
 }

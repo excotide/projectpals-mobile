@@ -39,6 +39,10 @@ abstract class RoomRemoteDataSource {
   Future<void> leaveRoom(String roomCode);
 
   Future<List<MemberModel>> getRoomMembers(String roomCode);
+
+  /// Jalankan smart matching (owner) → `POST /api/rooms/{code}/match`.
+  /// Mengembalikan map `data` berisi `teams`, `unassigned`, `meta`.
+  Future<Map<String, dynamic>> startMatching(String roomCode);
 }
 
 class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
@@ -218,6 +222,20 @@ class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
           .toList();
     } on DioException catch (e) {
       final msg = e.response?.data?['message'] ?? 'Failed to get members';
+      throw ServerException(message: msg, statusCode: e.response?.statusCode);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> startMatching(String roomCode) async {
+    try {
+      final response = await dio.post(ApiConstants.matchRoom(roomCode));
+      return (response.data['data'] as Map<String, dynamic>?) ?? {};
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      final msg = data is Map
+          ? (data['message'] as String?) ?? 'Failed to start matching'
+          : 'Connection failed. Check your network.';
       throw ServerException(message: msg, statusCode: e.response?.statusCode);
     }
   }

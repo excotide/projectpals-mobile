@@ -7,7 +7,7 @@ import '../../domain/entities/room_entity.dart';
 import '../bloc/role_normalizer_cubit.dart';
 import '../bloc/room_bloc.dart';
 import 'join_screen2.dart';
-import 'room_detail_screen.dart';
+import 'room_information_screen.dart';
 
 class CreateRoomScreen extends StatefulWidget {
   const CreateRoomScreen({super.key});
@@ -312,7 +312,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   /// Arahkan langsung ke halaman detail room yang baru dibuat.
   void _goToRoomDetail(RoomEntity room) {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => RoomDetailScreen(room: room)),
+      MaterialPageRoute(builder: (_) => RoomInformationScreen(room: room)),
     );
   }
 
